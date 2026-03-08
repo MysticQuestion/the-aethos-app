@@ -1,0 +1,458 @@
+Perfect — here’s the config schema that your request schema can $ref cleanly, aligned with everything we’ve already been using (tropical/sidereal + ayanamsa, house systems, orb policy, enabled points).
+
+Save as:
+
+schemas/canonical/aethos.calc_config.v1.json
+
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aethos.app/schemas/canonical/aethos.calc_config.v1.json",
+  "title": "Aethos Calculator Config (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["zodiac_system", "house_system", "orb_policy", "points_enabled"],
+  "properties": {
+    "zodiac_system": { "type": "string", "enum": ["tropical", "sidereal"] },
+
+    "ayanamsa": {
+      "type": ["string", "null"],
+      "enum": ["lahiri", "raman", "fagan_bradley", null],
+      "description": "Required when zodiac_system=sidereal; ignored otherwise."
+    },
+
+    "house_system": {
+      "type": "string",
+      "enum": ["whole_sign", "placidus", "koch", "regiomontanus"]
+    },
+
+    "orb_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "major_aspects"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "major_aspects": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["conjunction", "opposition", "trine", "square", "sextile"],
+          "properties": {
+            "conjunction": { "type": "number", "minimum": 0, "maximum": 15 },
+            "opposition": { "type": "number", "minimum": 0, "maximum": 15 },
+            "trine": { "type": "number", "minimum": 0, "maximum": 15 },
+            "square": { "type": "number", "minimum": 0, "maximum": 15 },
+            "sextile": { "type": "number", "minimum": 0, "maximum": 12 }
+          }
+        }
+      }
+    },
+
+    "points_enabled": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "lunar_nodes": { "type": ["boolean", "null"] },
+        "chiron": { "type": ["boolean", "null"] },
+        "asteroids": {
+          "type": ["array", "null"],
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+
+    "include_velocity": {
+      "type": ["boolean", "null"],
+      "default": true
+    }
+  },
+
+  "allOf": [
+    {
+      "if": {
+        "properties": { "zodiac_system": { "const": "sidereal" } },
+        "required": ["zodiac_system"]
+      },
+      "then": { "required": ["ayanamsa"] }
+    },
+    {
+      "if": {
+        "properties": { "zodiac_system": { "const": "tropical" } },
+        "required": ["zodiac_system"]
+      },
+      "then": {
+        "properties": { "ayanamsa": { "const": null } }
+      }
+    }
+  ]
+}
+
+
+---
+
+Patch your request schema to reference this config schema correctly
+
+In your existing input schema schemas/input/aethos.calc_request.v1.json, you already had:
+
+"config": { "$ref": "https://aethos.app/schemas/canonical/aethos.calc_config.v1.json" }
+
+With the file above in place, that $ref will resolve.
+
+
+---
+
+One more cleanup you should do (so nothing bites later)
+
+In the canonical output schema I gave you earlier, there was one small typo in reliability flags. Make sure the canonical schema includes:
+
+"ANGLES_UNRELIABLE" (correct spelling)
+
+
+and not the misspelled version.
+
+
+---
+
+Quick smoke test commands
+
+From repo root:
+
+pip install jsonschema
+python tools/goldens/run_goldens.py --mode lib --calc-lib services.calculator.app.core:calculate_canonical --update-expected
+python tools/goldens/run_goldens.py --mode lib --calc-lib services.calculator.app.core:calculate_canonical
+
+(Optional but recommended):
+
+export AETHOS_FREEZE_UTC=2026-03-03T12:00:00Z
+
+
+---
+
+What this unlocks immediately
+
+You now have:
+
+strict request validation (input schema + config schema)
+
+strict response validation (canonical schema) enforced inside the calculator core
+
+a deterministic stub engine so goldens + CI can go live today
+
+a clean path to replace internals with Swiss Ephemeris / real tz conversion without breaking the contract
+
+
+If you want the next “real engine” step, the correct order is:
+
+1. timezone conversion (IANA + DST policy) → correct UTC + JD
+
+
+2. Swiss Ephemeris planetary longitudes + speeds
+
+
+3. houses/angles in selected house system
+
+
+4. aspect detection with configurable orbs
+
+
+5. derived layers (sect, dignities, lots, profections, etc.)
+
+
+Perfect — here’s the config schema that your request schema can $ref cleanly, aligned with everything we’ve already been using (tropical/sidereal + ayanamsa, house systems, orb policy, enabled points).
+
+Save as:
+
+schemas/canonical/aethos.calc_config.v1.json
+
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aethos.app/schemas/canonical/aethos.calc_config.v1.json",
+  "title": "Aethos Calculator Config (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["zodiac_system", "house_system", "orb_policy", "points_enabled"],
+  "properties": {
+    "zodiac_system": { "type": "string", "enum": ["tropical", "sidereal"] },
+
+    "ayanamsa": {
+      "type": ["string", "null"],
+      "enum": ["lahiri", "raman", "fagan_bradley", null],
+      "description": "Required when zodiac_system=sidereal; ignored otherwise."
+    },
+
+    "house_system": {
+      "type": "string",
+      "enum": ["whole_sign", "placidus", "koch", "regiomontanus"]
+    },
+
+    "orb_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "major_aspects"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "major_aspects": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["conjunction", "opposition", "trine", "square", "sextile"],
+          "properties": {
+            "conjunction": { "type": "number", "minimum": 0, "maximum": 15 },
+            "opposition": { "type": "number", "minimum": 0, "maximum": 15 },
+            "trine": { "type": "number", "minimum": 0, "maximum": 15 },
+            "square": { "type": "number", "minimum": 0, "maximum": 15 },
+            "sextile": { "type": "number", "minimum": 0, "maximum": 12 }
+          }
+        }
+      }
+    },
+
+    "points_enabled": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "lunar_nodes": { "type": ["boolean", "null"] },
+        "chiron": { "type": ["boolean", "null"] },
+        "asteroids": {
+          "type": ["array", "null"],
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+
+    "include_velocity": {
+      "type": ["boolean", "null"],
+      "default": true
+    }
+  },
+
+  "allOf": [
+    {
+      "if": {
+        "properties": { "zodiac_system": { "const": "sidereal" } },
+        "required": ["zodiac_system"]
+      },
+      "then": { "required": ["ayanamsa"] }
+    },
+    {
+      "if": {
+        "properties": { "zodiac_system": { "const": "tropical" } },
+        "required": ["zodiac_system"]
+      },
+      "then": {
+        "properties": { "ayanamsa": { "const": null } }
+      }
+    }
+  ]
+}
+
+
+---
+
+Patch your request schema to reference this config schema correctly
+
+In your existing input schema schemas/input/aethos.calc_request.v1.json, you already had:
+
+"config": { "$ref": "https://aethos.app/schemas/canonical/aethos.calc_config.v1.json" }
+
+With the file above in place, that $ref will resolve.
+
+
+---
+
+One more cleanup you should do (so nothing bites later)
+
+In the canonical output schema I gave you earlier, there was one small typo in reliability flags. Make sure the canonical schema includes:
+
+"ANGLES_UNRELIABLE" (correct spelling)
+
+
+and not the misspelled version.
+
+
+---
+
+Quick smoke test commands
+
+From repo root:
+
+pip install jsonschema
+python tools/goldens/run_goldens.py --mode lib --calc-lib services.calculator.app.core:calculate_canonical --update-expected
+python tools/goldens/run_goldens.py --mode lib --calc-lib services.calculator.app.core:calculate_canonical
+
+(Optional but recommended):
+
+export AETHOS_FREEZE_UTC=2026-03-03T12:00:00Z
+
+
+---
+
+What this unlocks immediately
+
+You now have:
+
+strict request validation (input schema + config schema)
+
+strict response validation (canonical schema) enforced inside the calculator core
+
+a deterministic stub engine so goldens + CI can go live today
+
+a clean path to replace internals with Swiss Ephemeris / real tz conversion without breaking the contract
+
+
+If you want the next “real engine” step, the correct order is:
+
+1. timezone conversion (IANA + DST policy) → correct UTC + JD
+
+
+2. Swiss Ephemeris planetary longitudes + speeds
+
+
+3. houses/angles in selected house system
+
+
+4. aspect detection with configurable orbs
+
+
+5. derived layers (sect, dignities, lots, profections, et
+
+Excellent — next step is to replace the **two fake pillars** in the stub with real math:
+ 
+ 
+1. **IANA timezone → UTC** (with explicit DST ambiguity/invalid handling)
+ 
+2. **UTC → Julian Day → Swiss Ephemeris bodies/angles/houses**
+ 
+
+ 
+Below is a clean, incremental upgrade path that keeps your golden harness stable while you “turn on reality” in controlled commits.
+  
+## Step 1 — Real timezone conversion (DST-safe) + real Julian Day
+ 
+### 1. Add deps
+ 
+In `services/calculator/requirements.txt`, add:
+ `python-dateutil==2.9.0.post0 ` 
+*(stdlib `zoneinfo` alone can’t reliably detect “imaginary” times on spring-forward; `dateutil.tz` can.)*
+ 
+### 2. Add `services/calculator/app/timezone.py`
+ `from __future__ import annotations  from dataclasses import dataclass from datetime import datetime, timezone from typing import Literal, Optional  from dateutil import tz  TzInvalidPolicy = Literal["error", "normalize_forward"] TzAmbiguousPolicy = Literal["prefer_earliest", "prefer_latest"] TzResolution = Literal["ok", "ambiguous", "invalid", "time_unknown"]   @dataclass(frozen=True) class TzResolutionResult:     dt_local: datetime     dt_utc: datetime     resolution: TzResolution     note: Optional[str] = None   def resolve_local_to_utc(     date_yyyy_mm_dd: str,     time_hh_mm_ss: str,     tz_name: str,     invalid_policy: TzInvalidPolicy = "normalize_forward",     ambiguous_policy: TzAmbiguousPolicy = "prefer_earliest", ) -> TzResolutionResult:     """     Converts local date+time in IANA tz to UTC with explicit DST policies.     - Handles nonexistent times (spring-forward) via invalid_policy     - Handles ambiguous times (fall-back) via ambiguous_policy using fold     """     zone = tz.gettz(tz_name)     if zone is None:         raise ValueError(f"Unknown IANA timezone: {tz_name}")      dt_naive = datetime.fromisoformat(f"{date_yyyy_mm_dd}T{time_hh_mm_ss}")     dt_local = dt_naive.replace(tzinfo=zone)      # Nonexistent time (spring forward)     if not tz.datetime_exists(dt_local):         if invalid_policy == "error":             raise ValueError(f"Invalid local time (nonexistent due to DST): {dt_local.isoformat()}")         # normalize forward to the next real time         dt_local = tz.resolve_imaginary(dt_local)         return TzResolutionResult(             dt_local=dt_local,             dt_utc=dt_local.astimezone(timezone.utc),             resolution="invalid",             note="nonexistent_local_time_normalized_forward"         )      # Ambiguous time (fall back) — occurs twice; choose fold     if tz.datetime_ambiguous(dt_local):         # fold=0 => first occurrence; fold=1 => second occurrence         fold = 0 if ambiguous_policy == "prefer_earliest" else 1         dt_local = dt_local.replace(fold=fold)         return TzResolutionResult(             dt_local=dt_local,             dt_utc=dt_local.astimezone(timezone.utc),             resolution="ambiguous",             note=f"ambiguous_local_time_fold={fold}"         )      return TzResolutionResult(         dt_local=dt_local,         dt_utc=dt_local.astimezone(timezone.utc),         resolution="ok"     ) ` 
+### 3. Replace the stub UTC/JD block in `core.py`
+ 
+In `services/calculator/app/core.py`:
+ 
+ 
+- Import the resolver:
+ 
+
+ `from .timezone import resolve_local_to_utc ` 
+ 
+- Replace:
+ 
+
+ `birth_utc = f"{birth['birth_local_date']}T{birth_local_time}Z" julian_day = 2400000.5 + (seed_int % 200000) / 10.0 delta_t = 69.0 ` 
+with:
+ `tz_invalid_time_policy = "normalize_forward" tz_ambiguous_time_policy = "prefer_earliest"  tzr = resolve_local_to_utc(     birth["birth_local_date"],     birth_local_time,     birth["birth_timezone"],     invalid_policy=tz_invalid_time_policy,     ambiguous_policy=tz_ambiguous_time_policy )  birth_utc = tzr.dt_utc.replace(microsecond=0).isoformat().replace("+00:00", "Z")  # Julian Day in UT (real); keep delta_t placeholder until Step 2 # JD(Unix epoch) = 2440587.5; seconds/day = 86400 unix_seconds = tzr.dt_utc.timestamp() julian_day = 2440587.5 + (unix_seconds / 86400.0)  delta_t = 69.0  # keep placeholder until ephemeris step tz_resolution = tzr.resolution ` 
+This alone will immediately surface DST correctness issues in your goldens (which is good). Expect drift on DST cases. Commit + refresh expected baselines in a controlled PR.
+  
+## Step 2 — Swiss Ephemeris for planets, angles, houses (real astrology)
+ 
+### 1. Add deps
+ 
+Add to `services/calculator/requirements.txt`:
+ `pyswisseph==2.10.3.2 ` 
+### 2. Add `services/calculator/app/ephemeris.py`
+ 
+This is a minimal “compute longitudes + speeds” module. (Angles/houses next.)
+ `from __future__ import annotations  from typing import Dict, List, Literal, Tuple  import swisseph as swe  Body = Literal[   "Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn",   "Uranus","Neptune","Pluto","NorthNode","SouthNode","Chiron" ]  SWE_MAP = {   "Sun": swe.SUN,   "Moon": swe.MOON,   "Mercury": swe.MERCURY,   "Venus": swe.VENUS,   "Mars": swe.MARS,   "Jupiter": swe.JUPITER,   "Saturn": swe.SATURN,   "Uranus": swe.URANUS,   "Neptune": swe.NEPTUNE,   "Pluto": swe.PLUTO,   "Chiron": swe.CHIRON, }  def set_ephe_path(path: str) -> None:     swe.set_ephe_path(path)  def calc_planet(jd_ut: float, body: Body) -> Tuple[float, float, float, float, float, float]:     """     Returns: lon, lat, dist, speed_lon, speed_lat, speed_dist     """     if body == "NorthNode" or body == "SouthNode":         # True node: swe.TRUE_NODE; mean node: swe.MEAN_NODE (pick policy later)         lon, lat, dist, slon, slat, sdist = swe.calc_ut(jd_ut, swe.TRUE_NODE, swe.FLG_SWIEPH | swe.FLG_SPEED)[0]         if body == "SouthNode":             lon = (lon + 180.0) % 360.0         return lon, lat, dist, slon, slat, sdist      lon, lat, dist, slon, slat, sdist = swe.calc_ut(jd_ut, SWE_MAP[body], swe.FLG_SWIEPH | swe.FLG_SPEED)[0]     return lon, lat, dist, slon, slat, sdist  def calc_all_bodies(jd_ut: float, enabled_nodes: bool, enabled_chiron: bool) -> List[Dict]:     bodies: List[Body] = [       "Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn","Uranus","Neptune","Pluto"     ]     if enabled_nodes:         bodies += ["NorthNode","SouthNode"]     if enabled_chiron:         bodies += ["Chiron"]      out = []     for b in bodies:         lon, lat, dist, slon, slat, sdist = calc_planet(jd_ut, b)         out.append({           "body": b,           "lon": float(lon),           "lat": float(lat),           "distance_au": float(dist),           "speed_lon": float(slon),           "speed_lat": float(slat),           "speed_dist": float(sdist),         })     return out ` 
+### 3. Replace placeholder bodies in `core.py`
+ 
+Swap your placeholder body loop for:
+ 
+ 
+- Determine flags from config:
+ 
+
+ `enabled_nodes = bool(config["points_enabled"].get("lunar_nodes")) enabled_chiron = bool(config["points_enabled"].get("chiron")) ` 
+ 
+- Call ephemeris:
+ 
+
+ `from .ephemeris import calc_all_bodies raw_bodies = calc_all_bodies(julian_day, enabled_nodes, enabled_chiron) ` 
+Then assign sign/house/retrograde using your existing helpers (`sign_from_lon`, `house_from_lon_whole_sign`, retrograde if `speed_lon < 0`).
+ 
+### 4. Houses/angles
+ 
+Swiss Ephemeris has house routines (`swe.houses_ex`), but there are house-system subtleties. We’ll implement:
+ 
+ 
+- Whole sign: keep your current deterministic house logic (it’s correct once ASC is correct)
+ 
+- Placidus/Koch/Regiomontanus: use swe house cusps + angles; then house assignment uses cusp ranges.
+ 
+
+ 
+This is where high-latitude tests (Reykjavik/Tromsø) become crucial.
+  
+## Step 3 — Make the rollout safe (how to avoid chaos)
+ 
+Do it in **three PRs**:
+ 
+ 
+1.  
+**PR A — Timezone+JD real**
+ 
+ 
+  - update core
+ 
+  - refresh expected goldens
+ 
+  - verify DST cases now behave predictably and provenance shows `tz_resolution`.
+ 
+
+ 
+ 
+2.  
+**PR B — Planets real (no houses yet)**
+ 
+ 
+  - bodies drift, aspects drift
+ 
+  - still keep houses placeholder if you want to isolate differences.
+ 
+
+ 
+ 
+3.  
+**PR C — Angles/Houses real + aspects tightened**
+ 
+ 
+  - once angles/houses settle, you lock tolerances.
+ 
+
+ 
+ 
+
+  
+## What I need from you to finalize Step 2 cleanly (no follow-up questions required)
+ 
+You can just pick defaults now; here are the safest platform defaults:
+ 
+ 
+- Nodes: **TRUE_NODE** (not mean)
+ 
+- Houses: default **Whole Sign** (Quadrant optional)
+ 
+- Zodiac: tropical (sidereal optional with Lahiri)
+ 
+- Ayanamsa sidereal: **Lahiri**
+ 
+
+ 
+If you want, I’ll also generate:
+ 
+ 
+- a canonical **“ephemeris policy block”** added to `config` (node type, topocentric/geocentric, nutation, etc.) so the system remains auditable.
+ 
+
+ 
+Say “go” and I’ll give you the exact **core.py diff** for Step 1 (timezone+JD) and Step 2 (Swiss bodies) in one paste so you can implement immediately.

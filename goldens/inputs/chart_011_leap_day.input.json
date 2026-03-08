@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "subject_id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+  "birth": {
+    "birth_source": "certificate",
+    "time_accuracy_minutes": 0,
+    "birth_local_date": "2000-02-29",
+    "birth_local_time": "14:00:00",
+    "birth_timezone": "America/Chicago",
+    "geo": {
+      "lat": 41.8781,
+      "lon": -87.6298,
+      "place_label": "Chicago, IL, USA"
+    }
+  },
+  "config": {
+    "zodiac_system": "tropical",
+    "house_system": "whole_sign",
+    "orb_policy": {
+      "name": "AethosMajor_8deg",
+      "major_aspects": {
+        "conjunction": 8,
+        "opposition": 8,
+        "trine": 8,
+        "square": 7,
+        "sextile": 6
+      }
+    },
+    "points_enabled": {
+      "lunar_nodes": true,
+      "chiron": true
+    }
+  },
+  "meta": {
+    "tag": "leap_day",
+    "notes": "Leap day 2000 — Julian day computation stress test."
+  }
+}

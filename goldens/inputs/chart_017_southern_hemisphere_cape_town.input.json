@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "subject_id": "22222222-3333-4444-5555-666666666666",
+  "birth": {
+    "birth_source": "certificate",
+    "time_accuracy_minutes": 0,
+    "birth_local_date": "1995-01-15",
+    "birth_local_time": "04:15:00",
+    "birth_timezone": "Africa/Johannesburg",
+    "geo": {
+      "lat": -33.9249,
+      "lon": 18.4241,
+      "place_label": "Cape Town, South Africa"
+    }
+  },
+  "config": {
+    "zodiac_system": "tropical",
+    "house_system": "whole_sign",
+    "orb_policy": {
+      "name": "AethosMajor_8deg",
+      "major_aspects": {
+        "conjunction": 8,
+        "opposition": 8,
+        "trine": 8,
+        "square": 7,
+        "sextile": 6
+      }
+    },
+    "points_enabled": {
+      "lunar_nodes": true,
+      "chiron": true
+    }
+  },
+  "meta": {
+    "tag": "southern_hemisphere",
+    "notes": "Southern hemisphere 34°S — reversed ascendant dynamics."
+  }
+}

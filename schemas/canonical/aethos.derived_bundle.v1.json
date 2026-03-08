@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aethos.app/schemas/canonical/aethos.derived_bundle.v1.json",
+  "title": "Derived Deterministic Bundle (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["sect", "dignities", "angularity"],
+  "properties": {
+    "sect": { "type": "string", "enum": ["diurnal", "nocturnal"] },
+    "dignities": { "type": "array", "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.dignity_state.v1.json" } },
+    "angularity": { "type": "array", "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.angularity_state.v1.json" } },
+    "rulerships": { "type": "array", "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.rulership_edge.v1.json" } }
+  }
+}

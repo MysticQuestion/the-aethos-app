@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aethos.app/schemas/canonical/aethos.calculator_provenance.v1.json",
+  "title": "Calculator Provenance (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["calculator_version", "build_hash", "ephemeris", "generated_at_utc", "config_hash"],
+  "properties": {
+    "calculator_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "build_hash": { "type": "string", "minLength": 7, "maxLength": 64 },
+    "generated_at_utc": { "type": "string", "format": "date-time" },
+    "config_hash": { "type": "string", "minLength": 16, "maxLength": 128 },
+    "ephemeris": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "swe_version", "fileset"],
+      "properties": {
+        "provider": { "type": "string" },
+        "swe_version": { "type": "string" },
+        "fileset": { "type": "string" }
+      }
+    }
+  }
+}

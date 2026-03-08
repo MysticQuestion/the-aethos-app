@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aethos.app/schemas/canonical/aethos.canonical.v1.json",
+  "title": "Aethos Canonical Output (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "calculator", "birth_record", "config", "western_chart", "aspects", "derived"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "calculator": { "$ref": "https://aethos.app/schemas/canonical/aethos.calculator_provenance.v1.json" },
+    "birth_record": { "$ref": "https://aethos.app/schemas/canonical/aethos.birth_record.v1.json" },
+    "config": { "$ref": "https://aethos.app/schemas/canonical/aethos.calc_config.v1.json" },
+    "western_chart": { "$ref": "https://aethos.app/schemas/canonical/aethos.western_chart.v1.json" },
+    "aspects": {
+      "type": "array",
+      "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.aspect_edge.v1.json" }
+    },
+    "derived": { "$ref": "https://aethos.app/schemas/canonical/aethos.derived_bundle.v1.json" },
+    "reliability": { "$ref": "https://aethos.app/schemas/canonical/aethos.reliability.v1.json" }
+  }
+}

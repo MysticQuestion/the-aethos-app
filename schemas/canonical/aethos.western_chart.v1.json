@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aethos.app/schemas/canonical/aethos.western_chart.v1.json",
+  "title": "Western Chart (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["zodiac", "house_system", "angles", "bodies", "houses"],
+  "properties": {
+    "zodiac": { "type": "string", "enum": ["tropical", "sidereal"] },
+    "house_system": { "type": "string", "enum": ["whole_sign", "placidus", "koch", "regiomontanus"] },
+    "angles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["asc_lon", "mc_lon"],
+      "properties": {
+        "asc_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },
+        "mc_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },
+        "desc_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },
+        "ic_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" }
+      }
+    },
+    "bodies": {
+      "type": "array",
+      "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.planet_state.v1.json" }
+    },
+    "houses": {
+      "type": "array",
+      "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.house_state.v1.json" }
+    }
+  }
+}

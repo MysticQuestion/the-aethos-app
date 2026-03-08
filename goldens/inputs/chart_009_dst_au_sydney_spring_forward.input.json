@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "subject_id": "99999999-9999-9999-9999-999999999999",
+  "birth": {
+    "birth_source": "certificate",
+    "time_accuracy_minutes": 0,
+    "birth_local_date": "1996-10-27",
+    "birth_local_time": "02:30:00",
+    "birth_timezone": "Australia/Sydney",
+    "geo": {
+      "lat": -33.8688,
+      "lon": 151.2093,
+      "place_label": "Sydney, Australia"
+    }
+  },
+  "config": {
+    "zodiac_system": "tropical",
+    "house_system": "whole_sign",
+    "orb_policy": {
+      "name": "AethosMajor_8deg",
+      "major_aspects": {
+        "conjunction": 8,
+        "opposition": 8,
+        "trine": 8,
+        "square": 7,
+        "sextile": 6
+      }
+    },
+    "points_enabled": {
+      "lunar_nodes": true,
+      "chiron": true
+    }
+  },
+  "meta": {
+    "tag": "dst_au_spring",
+    "notes": "Southern hemisphere spring forward — AEST→AEDT."
+  }
+}

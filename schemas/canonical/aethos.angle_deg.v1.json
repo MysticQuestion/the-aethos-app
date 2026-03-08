@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json",
+  "title": "Angle Degrees (0..360)",
+  "type": "number",
+  "minimum": 0,
+  "exclusiveMaximum": 360
+}

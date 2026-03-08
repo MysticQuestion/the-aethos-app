@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aethos.app/schemas/canonical/aethos.rulership_edge.v1.json",
+  "title": "Rulership Edge (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["from", "to", "reason"],
+  "properties": {
+    "from": { "type": "string" },
+    "to": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" },
+    "reason": { "type": "string", "enum": ["sign_ruler", "exaltation_ruler", "triplicity_ruler", "term_ruler", "face_ruler"] }
+  }
+}

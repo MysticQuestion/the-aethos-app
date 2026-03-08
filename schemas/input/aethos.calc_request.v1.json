@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aethos.app/schemas/input/aethos.calc_request.v1.json",
+  "title": "Aethos Calculator Request (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "subject_id", "birth", "config"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "subject_id": { "type": "string" },
+    "birth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["birth_local_date", "birth_timezone", "geo"],
+      "properties": {
+        "birth_source": { "type": "string", "enum": ["certificate", "family_memory", "approx"] },
+        "time_accuracy_minutes": { "type": "integer", "minimum": 0, "maximum": 1440 },
+        "birth_local_date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "birth_local_time": {
+          "type": ["string", "null"],
+          "pattern": "^\\d{2}:\\d{2}(:\\d{2})?$"
+        },
+        "birth_timezone": { "type": "string", "minLength": 3 },
+        "geo": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["lat", "lon", "place_label"],
+          "properties": {
+            "lat": { "type": "number", "minimum": -90, "maximum": 90 },
+            "lon": { "type": "number", "minimum": -180, "maximum": 180 },
+            "place_label": { "type": "string" }
+          }
+        }
+      }
+    },
+    "config": { "$ref": "https://aethos.app/schemas/canonical/aethos.calc_config.v1.json" },
+    "meta": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

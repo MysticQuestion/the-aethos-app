@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "subject_id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+  "birth": {
+    "birth_source": "certificate",
+    "time_accuracy_minutes": 0,
+    "birth_local_date": "1985-07-04",
+    "birth_local_time": "00:00:00",
+    "birth_timezone": "America/Denver",
+    "geo": {
+      "lat": 39.7392,
+      "lon": -104.9903,
+      "place_label": "Denver, CO, USA"
+    }
+  },
+  "config": {
+    "zodiac_system": "tropical",
+    "house_system": "whole_sign",
+    "orb_policy": {
+      "name": "AethosMajor_8deg",
+      "major_aspects": {
+        "conjunction": 8,
+        "opposition": 8,
+        "trine": 8,
+        "square": 7,
+        "sextile": 6
+      }
+    },
+    "points_enabled": {
+      "lunar_nodes": true,
+      "chiron": true
+    }
+  },
+  "meta": {
+    "tag": "midnight_start",
+    "notes": "Midnight start — date boundary edge case."
+  }
+}

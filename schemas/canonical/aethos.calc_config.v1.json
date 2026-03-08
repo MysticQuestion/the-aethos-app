@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aethos.app/schemas/canonical/aethos.calc_config.v1.json",
+  "title": "Aethos Calculator Config (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["zodiac_system", "house_system", "orb_policy", "points_enabled"],
+  "properties": {
+    "zodiac_system": { "type": "string", "enum": ["tropical", "sidereal"] },
+
+    "ayanamsa": {
+      "type": ["string", "null"],
+      "enum": ["lahiri", "raman", "fagan_bradley", null],
+      "description": "Required when zodiac_system=sidereal; ignored otherwise."
+    },
+
+    "house_system": {
+      "type": "string",
+      "enum": ["whole_sign", "placidus", "koch", "regiomontanus"]
+    },
+
+    "orb_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "major_aspects"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "major_aspects": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["conjunction", "opposition", "trine", "square", "sextile"],
+          "properties": {
+            "conjunction": { "type": "number", "minimum": 0, "maximum": 15 },
+            "opposition": { "type": "number", "minimum": 0, "maximum": 15 },
+            "trine": { "type": "number", "minimum": 0, "maximum": 15 },
+            "square": { "type": "number", "minimum": 0, "maximum": 15 },
+            "sextile": { "type": "number", "minimum": 0, "maximum": 12 }
+          }
+        }
+      }
+    },
+
+    "points_enabled": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "lunar_nodes": { "type": ["boolean", "null"] },
+        "chiron": { "type": ["boolean", "null"] },
+        "asteroids": {
+          "type": ["array", "null"],
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+
+    "include_velocity": {
+      "type": ["boolean", "null"],
+      "default": true
+    }
+  },
+
+  "allOf": [
+    {
+      "if": {
+        "properties": { "zodiac_system": { "const": "sidereal" } },
+        "required": ["zodiac_system"]
+      },
+      "then": { "required": ["ayanamsa"] }
+    },
+    {
+      "if": {
+        "properties": { "zodiac_system": { "const": "tropical" } },
+        "required": ["zodiac_system"]
+      },
+      "then": {
+        "properties": { "ayanamsa": { "const": null } }
+      }
+    }
+  ]
+}

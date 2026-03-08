@@ -1,0 +1,417 @@
+Done — here’s a one-command golden workflow: validate inputs → run calculator (HTTP) → write goldens/actual/ → schema-validate outputs → compare against goldens/outputs/ → print a readable diff summary → exit non-zero on drift.
+
+I’m giving you a Python CLI (most frictionless in CI) plus a tiny Makefile and GitHub Actions snippet.
+
+
+---
+
+1) Files to add
+
+1.1 tools/goldens/run_goldens.py
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Dict, List, Tuple
+
+import urllib.request
+import urllib.error
+
+from jsonschema import Draft202012Validator, RefResolver
+
+# -------------------------
+# Paths / defaults
+# -------------------------
+ROOT = Path(".")
+SCHEMAS_DIR = ROOT / "schemas"
+INPUT_SCHEMA = SCHEMAS_DIR / "input" / "aethos.calc_request.v1.json"
+CANON_SCHEMA = SCHEMAS_DIR / "canonical" / "aethos.canonical.v1.json"
+
+GOLDENS_INPUTS = ROOT / "goldens" / "inputs"
+GOLDENS_EXPECTED = ROOT / "goldens" / "outputs"
+GOLDENS_ACTUAL = ROOT / "goldens" / "actual"
+
+DEFAULT_CALC_URL = os.environ.get("AETHOS_CALC_URL", "http://localhost:8080/calc/canonical")
+
+# -------------------------
+# JSON helpers
+# -------------------------
+def load_json(path: Path) -> Dict[str, Any]:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+def write_json(path: Path, obj: Dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(obj, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+def sha256_text(s: str) -> str:
+    return hashlib.sha256(s.encode("utf-8")).hexdigest()
+
+# -------------------------
+# Schema resolver (local $ref)
+# -------------------------
+def build_resolver(schema_dir: Path) -> RefResolver:
+    prefix = "https://aethos.app/schemas/"
+
+    def resolve_remote(uri: str):
+        if not uri.startswith(prefix):
+            raise FileNotFoundError(f"Unsupported ref uri: {uri}")
+        rel = uri[len(prefix):]
+        local = schema_dir / rel
+        if not local.exists():
+            raise FileNotFoundError(f"Missing schema file for ref: {uri} -> {local}")
+        return load_json(local)
+
+    store = {}
+    for p in schema_dir.rglob("*.json"):
+        s = load_json(p)
+        if "$id" in s:
+            store[s["$id"]] = s
+
+    resolver = RefResolver.from_schema(store.get("https://aethos.app/schemas/canonical/aethos.canonical.v1.json", {}), store=store)
+    resolver.resolve_remote = resolve_remote  # type: ignore[attr-defined]
+    return resolver
+
+def validate_schema(instance: Dict[str, Any], root_schema_path: Path, schema_dir: Path) -> List[str]:
+    root_schema = load_json(root_schema_path)
+    resolver = build_resolver(schema_dir)
+    validator = Draft202012Validator(root_schema, resolver=resolver)
+    errors = sorted(validator.iter_errors(instance), key=lambda e: list(e.path))
+    msgs = []
+    for e in errors[:80]:
+        msgs.append(f"{list(e.path)}: {e.message}")
+    return msgs
+
+# -------------------------
+# HTTP call to calculator
+# -------------------------
+def post_json(url: str, payload: Dict[str, Any], timeout: int = 60) -> Dict[str, Any]:
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(
+        url=url,
+        data=data,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            body = resp.read().decode("utf-8")
+            return json.loads(body)
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"HTTPError {e.code} calling {url}:\n{body}") from e
+    except urllib.error.URLError as e:
+        raise RuntimeError(f"URLError calling {url}: {e}") from e
+
+# -------------------------
+# Canonical comparison (readable diffs)
+# -------------------------
+@dataclass
+class Drift:
+    file: str
+    issues: List[str]
+
+def _index_planets(canon: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    return {p["body"]: p for p in canon["western_chart"]["bodies"]}
+
+def _index_aspects(canon: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    # Key aspects stably: bodyA-bodyB-aspect (sorted bodies)
+    idx = {}
+    for a in canon.get("aspects", []):
+        b1, b2 = a["body_a"], a["body_b"]
+        key = "|".join(sorted([b1, b2]) + [a["aspect"]])
+        idx[key] = a
+    return idx
+
+def compare_canonical(expected: Dict[str, Any], actual: Dict[str, Any],
+                      lon_tol_deg: float = 0.0003,
+                      orb_tol_deg: float = 0.01) -> List[str]:
+    issues: List[str] = []
+
+    # Basic guardrails
+    if expected.get("schema_version") != actual.get("schema_version"):
+        issues.append(f"schema_version changed: {expected.get('schema_version')} -> {actual.get('schema_version')}")
+
+    # Provenance sanity (not strict equality; drift here is normal)
+    for k in ["calculator_version", "build_hash", "config_hash"]:
+        if k not in actual.get("calculator", {}):
+            issues.append(f"missing calculator.{k} in actual output")
+
+    # Planets: lon/sign/house/retrograde
+    eplan = _index_planets(expected)
+    aplan = _index_planets(actual)
+
+    if set(eplan.keys()) != set(aplan.keys()):
+        issues.append(f"planet set changed: expected={sorted(eplan.keys())} actual={sorted(aplan.keys())}")
+        return issues  # no point continuing
+
+    for body in sorted(eplan.keys()):
+        ep, ap = eplan[body], aplan[body]
+
+        # longitude drift (wrap-safe)
+        def angdiff(x: float, y: float) -> float:
+            d = abs(x - y) % 360.0
+            return min(d, 360.0 - d)
+
+        dlon = angdiff(float(ep["lon"]), float(ap["lon"]))
+        if dlon > lon_tol_deg:
+            issues.append(f"{body}.lon drift {dlon:.6f}° (tol {lon_tol_deg}) exp={ep['lon']:.6f} act={ap['lon']:.6f}")
+
+        for field in ["sign", "house", "retrograde"]:
+            if ep.get(field) != ap.get(field):
+                issues.append(f"{body}.{field} changed exp={ep.get(field)} act={ap.get(field)}")
+
+    # Angles drift (Asc/MC)
+    for angle in ["asc_lon", "mc_lon"]:
+        if "angles" in expected.get("western_chart", {}) and "angles" in actual.get("western_chart", {}):
+            ea = expected["western_chart"]["angles"].get(angle)
+            aa = actual["western_chart"]["angles"].get(angle)
+            if ea is not None and aa is not None:
+                d = abs((ea - aa) % 360.0)
+                d = min(d, 360.0 - d)
+                if d > lon_tol_deg:
+                    issues.append(f"angles.{angle} drift {d:.6f}° (tol {lon_tol_deg}) exp={ea:.6f} act={aa:.6f}")
+
+    # Aspects set + orb drift
+    easp = _index_aspects(expected)
+    aasp = _index_aspects(actual)
+
+    if set(easp.keys()) != set(aasp.keys()):
+        missing = sorted(set(easp.keys()) - set(aasp.keys()))
+        extra = sorted(set(aasp.keys()) - set(easp.keys()))
+        if missing:
+            issues.append(f"aspects missing ({len(missing)}): {missing[:10]}{'...' if len(missing) > 10 else ''}")
+        if extra:
+            issues.append(f"aspects extra ({len(extra)}): {extra[:10]}{'...' if len(extra) > 10 else ''}")
+
+    # For shared aspects, check orb within tolerance
+    for key in sorted(set(easp.keys()) & set(aasp.keys())):
+        eo, ao = easp[key].get("orb"), aasp[key].get("orb")
+        if eo is not None and ao is not None:
+            if abs(float(eo) - float(ao)) > orb_tol_deg:
+                issues.append(f"aspect orb drift {key}: exp={eo:.4f} act={ao:.4f} (tol {orb_tol_deg})")
+
+    # Derived fields that must remain stable
+    if expected.get("derived", {}).get("sect") != actual.get("derived", {}).get("sect"):
+        issues.append(f"derived.sect changed exp={expected.get('derived', {}).get('sect')} act={actual.get('derived', {}).get('sect')}")
+
+    return issues
+
+# -------------------------
+# Main golden workflow
+# -------------------------
+def run(calc_url: str, update_expected: bool, fail_on_missing_expected: bool) -> int:
+    GOLDENS_ACTUAL.mkdir(parents=True, exist_ok=True)
+    GOLDENS_EXPECTED.mkdir(parents=True, exist_ok=True)
+
+    input_files = sorted(GOLDENS_INPUTS.glob("*.input.json"))
+    if not input_files:
+        print(f"No inputs found in {GOLDENS_INPUTS}")
+        return 2
+
+    drifts: List[Drift] = []
+    errors: List[str] = []
+
+    # Validate all inputs first
+    for f in input_files:
+        inst = load_json(f)
+        msgs = validate_schema(inst, INPUT_SCHEMA, SCHEMAS_DIR)
+        if msgs:
+            errors.append(f"[INPUT SCHEMA FAIL] {f.name}\n  " + "\n  ".join(msgs))
+
+    if errors:
+        print("\n".join(errors))
+        return 2
+
+    # Run calculator on each input
+    for f in input_files:
+        payload = load_json(f)
+
+        # Optional: embed a stable config_hash if your calculator doesn't compute it
+        # (better: calculator computes config_hash itself deterministically)
+        # payload["meta"] = payload.get("meta", {})
+        # payload["meta"]["_client_config_hash"] = sha256_text(json.dumps(payload["config"], sort_keys=True))
+
+        try:
+            out = post_json(calc_url, payload, timeout=90)
+        except Exception as e:
+            print(f"[CALC FAIL] {f.name}: {e}")
+            return 3
+
+        actual_path = GOLDENS_ACTUAL / f.name.replace(".input.json", ".canonical.json")
+        write_json(actual_path, out)
+
+        # Validate output schema
+        out_msgs = validate_schema(out, CANON_SCHEMA, SCHEMAS_DIR)
+        if out_msgs:
+            print(f"[OUTPUT SCHEMA FAIL] {f.name}\n  " + "\n  ".join(out_msgs))
+            return 4
+
+        expected_path = GOLDENS_EXPECTED / actual_path.name
+
+        # Bootstrap/update expected
+        if update_expected:
+            write_json(expected_path, out)
+            print(f"[UPDATED EXPECTED] {expected_path.name}")
+            continue
+
+        if not expected_path.exists():
+            msg = f"[MISSING EXPECTED] {expected_path.name}"
+            if fail_on_missing_expected:
+                print(msg)
+                return 5
+            else:
+                print(msg + " (skipping drift compare)")
+                continue
+
+        expected = load_json(expected_path)
+        issues = compare_canonical(expected, out)
+        if issues:
+            drifts.append(Drift(file=expected_path.name, issues=issues))
+
+    if drifts:
+        print("\n=== GOLDEN DRIFT REPORT ===")
+        for d in drifts:
+            print(f"\n{d.file}")
+            for line in d.issues[:60]:
+                print(f"  - {line}")
+            if len(d.issues) > 60:
+                print(f"  ... ({len(d.issues) - 60} more)")
+        print("\nResult: FAIL (drift detected)")
+        return 6
+
+    print("Result: PASS (no drift)")
+    return 0
+
+def main() -> None:
+    ap = argparse.ArgumentParser(description="Run Aethos golden regression suite.")
+    ap.add_argument("--calc-url", default=DEFAULT_CALC_URL, help="Calculator POST endpoint URL")
+    ap.add_argument("--update-expected", action="store_true", help="Overwrite goldens/outputs with current outputs")
+    ap.add_argument("--allow-missing-expected", action="store_true", help="Do not fail if expected is missing")
+    args = ap.parse_args()
+
+    code = run(
+        calc_url=args.calc_url,
+        update_expected=args.update_expected,
+        fail_on_missing_expected=not args.allow_missing_expected
+    )
+    sys.exit(code)
+
+if __name__ == "__main__":
+    main()
+
+
+---
+
+1.2 tools/goldens/README.md (short operator guide)
+
+# Aethos Golden Suite
+
+## Run (compare vs expected)
+AETHOS_CALC_URL=http://localhost:8080/calc/canonical \
+python tools/goldens/run_goldens.py
+
+## Bootstrap/update expected baselines
+AETHOS_CALC_URL=http://localhost:8080/calc/canonical \
+python tools/goldens/run_goldens.py --update-expected
+
+## Allow missing expected (non-blocking)
+python tools/goldens/run_goldens.py --allow-missing-expected
+
+
+---
+
+2) Requirements
+
+Add to requirements.txt (or your tool requirements):
+
+jsonschema==4.23.0
+pytest==8.3.2
+
+
+---
+
+3) Makefile (optional convenience)
+
+Makefile
+
+goldens:
+	python tools/goldens/run_goldens.py
+
+goldens-update:
+	python tools/goldens/run_goldens.py --update-expected
+
+Then you can run:
+
+make goldens
+make goldens-update
+
+
+---
+
+4) GitHub Actions CI snippet (drop-in)
+
+.github/workflows/goldens.yml
+
+name: Goldens
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  goldens:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Start your calculator service here if it’s part of the repo:
+      # - name: Start calculator
+      #   run: |
+      #     docker compose up -d calculator
+      #     sleep 2
+
+      - name: Run goldens
+        env:
+          AETHOS_CALC_URL: http://localhost:8080/calc/canonical
+        run: |
+          python tools/goldens/run_goldens.py
+
+(If your calculator runs via docker compose, wire it in; if it’s a library call instead of HTTP, tell me and I’ll swap the runner to import-and-execute locally.)
+
+
+---
+
+5) Critical DST policy hook (so drift is explainable)
+
+Your calculator should record (in calculator provenance or a new birth_record.meta) something like:
+
+tz_invalid_time_policy: "error" or "normalize_forward"
+
+tz_ambiguous_time_policy: "prefer_earliest" or "prefer_latest"
+
+
+Right now the runner will faithfully detect drift, but you want the why embedded in the output so the diff report is interpretable.
+
+
+---
+
+If you want the “complete kit” in one shot
+
+Next I can generate a minimal FastAPI calculator stub that accepts the request schema, returns canonical schema-shaped output (even if placeholders), and allows you to run the entire CI loop today while the real ephemeris engine is still being built.

@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "subject_id": "33333333-3333-3333-3333-333333333333",
+  "birth": {
+    "birth_source": "certificate",
+    "time_accuracy_minutes": 0,
+    "birth_local_date": "1994-02-03",
+    "birth_local_time": "21:05:00",
+    "birth_timezone": "Europe/London",
+    "geo": {
+      "lat": 51.5074,
+      "lon": -0.1278,
+      "place_label": "London, UK"
+    }
+  },
+  "config": {
+    "zodiac_system": "tropical",
+    "house_system": "whole_sign",
+    "orb_policy": {
+      "name": "AethosMajor_8deg",
+      "major_aspects": {
+        "conjunction": 8,
+        "opposition": 8,
+        "trine": 8,
+        "square": 7,
+        "sextile": 6
+      }
+    },
+    "points_enabled": {
+      "lunar_nodes": true,
+      "chiron": true
+    }
+  },
+  "meta": {
+    "tag": "standard",
+    "notes": "Baseline Europe example."
+  }
+}

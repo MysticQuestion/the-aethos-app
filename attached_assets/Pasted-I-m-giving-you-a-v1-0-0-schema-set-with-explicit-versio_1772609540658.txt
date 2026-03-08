@@ -1,0 +1,290 @@
+I’m giving you a **v1.0.0 schema set** with explicit version/provenance, strict typing, and room for future expansion without breaking existing clients.
+  
+## 0) Conventions
+ 
+ 
+- JSON Schema: **2020-12**
+ 
+- Schema versioning: `schema_version` is semantic (e.g., `"1.0.0"`)
+ 
+- Determinism: calculators must emit **stable ordering** for arrays where possible (e.g., planets ordered by enum list).
+ 
+- Time: use **RFC3339** timestamps in UTC for computed times.
+ 
+
+  
+# 1) `aethos.canonical.v1.json` (Root Schema)
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.canonical.v1.json",   "title": "Aethos Canonical Output (v1)",   "type": "object",   "additionalProperties": false,   "required": [     "schema_version",     "calculator",     "birth_record",     "config",     "western_chart",     "aspects",     "derived"   ],   "properties": {     "schema_version": {       "type": "string",       "const": "1.0.0"     },     "calculator": { "$ref": "https://aethos.app/schemas/canonical/aethos.calculator_provenance.v1.json" },     "birth_record": { "$ref": "https://aethos.app/schemas/canonical/aethos.birth_record.v1.json" },     "config": { "$ref": "https://aethos.app/schemas/canonical/aethos.calc_config.v1.json" },     "western_chart": { "$ref": "https://aethos.app/schemas/canonical/aethos.western_chart.v1.json" },     "aspects": {       "type": "array",       "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.aspect_edge.v1.json" }     },     "derived": { "$ref": "https://aethos.app/schemas/canonical/aethos.derived_bundle.v1.json" },     "reliability": { "$ref": "https://aethos.app/schemas/canonical/aethos.reliability.v1.json" }   } } `  
+# 2) Provenance / Versioning
+ 
+## 2.1 `aethos.calculator_provenance.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.calculator_provenance.v1.json",   "title": "Calculator Provenance (v1)",   "type": "object",   "additionalProperties": false,   "required": [     "calculator_version",     "build_hash",     "ephemeris",     "generated_at_utc",     "config_hash"   ],   "properties": {     "calculator_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },     "build_hash": { "type": "string", "minLength": 7, "maxLength": 64 },     "generated_at_utc": { "type": "string", "format": "date-time" },     "config_hash": { "type": "string", "minLength": 16, "maxLength": 128 },     "ephemeris": {       "type": "object",       "additionalProperties": false,       "required": ["provider", "swe_version", "fileset"],       "properties": {         "provider": { "type": "string", "enum": ["swisseph"] },         "swe_version": { "type": "string" },         "fileset": { "type": "string", "description": "e.g., 'DE431 subset 1900-2100'" }       }     }   } } `  
+# 3) Birth Record
+ 
+## 3.1 `aethos.birth_record.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.birth_record.v1.json",   "title": "Canonical Birth Record (v1)",   "type": "object",   "additionalProperties": false,   "required": [     "subject_id",     "birth_local_datetime",     "birth_timezone",     "birth_utc_datetime",     "julian_day",     "geo"   ],   "properties": {     "subject_id": { "type": "string", "format": "uuid" },     "birth_source": { "type": "string", "enum": ["certificate", "family_memory", "approx"] },     "time_accuracy_minutes": { "type": "integer", "minimum": 0, "maximum": 720 },      "birth_local_datetime": { "type": "string", "format": "date-time" },     "birth_timezone": { "type": "string", "minLength": 3, "description": "IANA tz, e.g. America/Los_Angeles" },     "birth_utc_datetime": { "type": "string", "format": "date-time" },      "julian_day": { "type": "number" },     "delta_t_seconds": { "type": "number" },      "geo": {       "type": "object",       "additionalProperties": false,       "required": ["lat", "lon"],       "properties": {         "lat": { "type": "number", "minimum": -90, "maximum": 90 },         "lon": { "type": "number", "minimum": -180, "maximum": 180 },         "place_label": { "type": "string" }       }     }   } } `  
+# 4) Calculation Config
+ 
+## 4.1 `aethos.calc_config.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.calc_config.v1.json",   "title": "Calculation Config (v1)",   "type": "object",   "additionalProperties": false,   "required": [     "zodiac_system",     "house_system",     "orb_policy",     "points_enabled"   ],   "properties": {     "zodiac_system": { "type": "string", "enum": ["tropical", "sidereal"] },     "ayanamsa": {       "type": "string",       "enum": ["lahiri", "raman", "fagan_bradley"],       "description": "Required when zodiac_system=sidereal"     },     "house_system": { "type": "string", "enum": ["whole_sign", "placidus", "koch", "regiomontanus"] },      "orb_policy": {       "type": "object",       "additionalProperties": false,       "required": ["name", "major_aspects"],       "properties": {         "name": { "type": "string" },         "major_aspects": {           "type": "object",           "additionalProperties": false,           "required": ["conjunction", "opposition", "trine", "square", "sextile"],           "properties": {             "conjunction": { "type": "number", "minimum": 0, "maximum": 15 },             "opposition": { "type": "number", "minimum": 0, "maximum": 15 },             "trine": { "type": "number", "minimum": 0, "maximum": 15 },             "square": { "type": "number", "minimum": 0, "maximum": 15 },             "sextile": { "type": "number", "minimum": 0, "maximum": 15 }           }         }       }     },      "points_enabled": {       "type": "object",       "additionalProperties": false,       "properties": {         "lunar_nodes": { "type": "boolean" },         "chiron": { "type": "boolean" },         "asteroids": { "type": "array", "items": { "type": "string" } }       }     },      "include_velocity": { "type": "boolean", "default": true }   },   "allOf": [     {       "if": { "properties": { "zodiac_system": { "const": "sidereal" } } },       "then": { "required": ["ayanamsa"] }     }   ] } `  
+# 5) Western Chart Primitives
+ 
+## 5.1 `aethos.western_chart.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.western_chart.v1.json",   "title": "Western Chart (v1)",   "type": "object",   "additionalProperties": false,   "required": ["zodiac", "house_system", "angles", "bodies", "houses"],   "properties": {     "zodiac": { "type": "string", "enum": ["tropical", "sidereal"] },     "ayanamsa": { "type": "string", "enum": ["lahiri", "raman", "fagan_bradley"] },     "house_system": { "type": "string", "enum": ["whole_sign", "placidus", "koch", "regiomontanus"] },      "angles": {       "type": "object",       "additionalProperties": false,       "required": ["asc_lon", "mc_lon"],       "properties": {         "asc_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },         "mc_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },         "desc_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },         "ic_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" }       }     },      "bodies": {       "type": "array",       "description": "Ordered list (stable ordering recommended).",       "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.planet_state.v1.json" }     },      "houses": {       "type": "array",       "minItems": 12,       "maxItems": 12,       "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.house_state.v1.json" }     }   } } ` 
+## 5.2 `aethos.angle_deg.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json",   "title": "Angle Degrees (0..360)",   "type": "number",   "minimum": 0,   "exclusiveMaximum": 360 } ` 
+## 5.3 `aethos.planet_state.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.planet_state.v1.json",   "title": "Planet / Body State (v1)",   "type": "object",   "additionalProperties": false,   "required": [     "body",     "lon",     "lat",     "distance_au",     "speed_lon",     "speed_lat",     "speed_dist",     "retrograde",     "sign",     "house"   ],   "properties": {     "body": {       "type": "string",       "enum": [         "Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn",         "Uranus","Neptune","Pluto",         "NorthNode","SouthNode","Chiron"       ]     },     "lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },     "lat": { "type": "number", "minimum": -90, "maximum": 90 },     "distance_au": { "type": "number", "minimum": 0 },      "speed_lon": { "type": "number", "description": "deg/day" },     "speed_lat": { "type": "number", "description": "deg/day" },     "speed_dist": { "type": "number", "description": "AU/day" },      "retrograde": { "type": "boolean" },      "sign": {       "type": "string",       "enum": [         "Aries","Taurus","Gemini","Cancer","Leo","Virgo",         "Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"       ]     },     "house": { "type": "integer", "minimum": 1, "maximum": 12 },      "meta": {       "type": "object",       "additionalProperties": true,       "description": "Future-proof extension point (e.g., magnitude, phase for Moon)."     }   } } ` 
+## 5.4 `aethos.house_state.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.house_state.v1.json",   "title": "House State (v1)",   "type": "object",   "additionalProperties": false,   "required": ["house", "sign", "start_lon", "end_lon"],   "properties": {     "house": { "type": "integer", "minimum": 1, "maximum": 12 },     "sign": {       "type": "string",       "enum": [         "Aries","Taurus","Gemini","Cancer","Leo","Virgo",         "Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"       ]     },     "start_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },     "end_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },     "cusp_lon": {       "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json",       "description": "Only meaningful for quadrant systems; for whole sign, equals start_lon."     }   } } `  
+# 6) Aspect Graph
+ 
+## 6.1 `aethos.aspect_edge.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.aspect_edge.v1.json",   "title": "Aspect Edge (v1)",   "type": "object",   "additionalProperties": false,   "required": [     "body_a",     "body_b",     "aspect",     "exact_angle",     "separation",     "orb",     "applying",     "strength"   ],   "properties": {     "body_a": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" },     "body_b": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" },      "aspect": {       "type": "string",       "enum": ["conjunction","opposition","trine","square","sextile","quincunx"]     },      "exact_angle": { "type": "number", "minimum": 0, "maximum": 180 },     "separation": { "type": "number", "minimum": 0, "maximum": 180 },     "orb": { "type": "number", "minimum": 0, "maximum": 30 },      "applying": { "type": "boolean" },      "strength": {       "type": "number",       "minimum": 0,       "maximum": 1,       "description": "Normalized strength score based on orb & optionally body weighting."     }   } } ` 
+## 6.2 `aethos.body_enum.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json",   "title": "Bodies Enum",   "type": "string",   "enum": [     "Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn",     "Uranus","Neptune","Pluto",     "NorthNode","SouthNode","Chiron"   ] } `  
+# 7) Derived Bundle (Hellenistic-friendly deterministic features)
+ 
+## 7.1 `aethos.derived_bundle.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.derived_bundle.v1.json",   "title": "Derived Deterministic Bundle (v1)",   "type": "object",   "additionalProperties": false,   "required": ["sect", "dignities", "angularity"],   "properties": {     "sect": { "type": "string", "enum": ["diurnal", "nocturnal"] },      "dignities": {       "type": "array",       "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.dignity_state.v1.json" }     },      "angularity": {       "type": "array",       "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.angularity_state.v1.json" }     },      "rulerships": {       "type": "array",       "description": "Optional v1 extension. House ruler chain / dispositors.",       "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.rulership_edge.v1.json" }     }   } } ` 
+## 7.2 `aethos.dignity_state.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.dignity_state.v1.json",   "title": "Dignity State (v1)",   "type": "object",   "additionalProperties": false,   "required": ["body", "sign", "status"],   "properties": {     "body": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" },     "sign": {       "type": "string",       "enum": [         "Aries","Taurus","Gemini","Cancer","Leo","Virgo",         "Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"       ]     },     "status": { "type": "string", "enum": ["domicile","exaltation","detriment","fall","peregrine"] }   } } ` 
+## 7.3 `aethos.angularity_state.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.angularity_state.v1.json",   "title": "Angularity State (v1)",   "type": "object",   "additionalProperties": false,   "required": ["body", "class"],   "properties": {     "body": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" },     "class": { "type": "string", "enum": ["angular","succedent","cadent"] }   } } ` 
+## 7.4 `aethos.rulership_edge.v1.json` (optional in v1 but defined now)
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.rulership_edge.v1.json",   "title": "Rulership / Dispositor Edge (v1)",   "type": "object",   "additionalProperties": false,   "required": ["from", "to", "reason"],   "properties": {     "from": { "type": "string", "description": "e.g., 'House7' or 'Venus'" },     "to": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" },     "reason": { "type": "string", "enum": ["sign_ruler","exaltation_ruler","triplicity_ruler","term_ruler","face_ruler"] }   } } `  
+# 8) Reliability Flags (uncertain time, etc.)
+ 
+## 8.1 `aethos.reliability.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.reliability.v1.json",   "title": "Reliability Flags (v1)",   "type": "object",   "additionalProperties": false,   "properties": {     "time_uncertainty_minutes": { "type": "integer", "minimum": 0, "maximum": 1440 },     "flags": {       "type": "array",       "items": {         "type": "string",         "enum": [           "HOUSES_UNRELIABLE",           "ANGLES_UNRELIABLE",           "MOON_SIGN_EDGE_CASE",           "ASPECTS_PARTIALLY_UNRELIABLE",           "EVENT_WINDOWS_UNRELIABLE"         ]       }     }   } } `  
+# 9) Timing Events (separate but critical canonical-adjacent)
+ 
+This is the deterministic “feed” that the Timing Intelligence Engine uses.
+ 
+## 9.1 `aethos.timing_event.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/events/aethos.timing_event.v1.json",   "title": "Timing Event (v1)",   "type": "object",   "additionalProperties": false,   "required": [     "event_id",     "event_type",     "start_utc",     "peak_utc",     "end_utc",     "bodies",     "orb_used_deg",     "meta"   ],   "properties": {     "event_id": { "type": "string", "minLength": 10 },     "event_type": {       "type": "string",       "enum": [         "TRANSIT_EXACT_ASPECT",         "INGRESS",         "STATION",         "LUNATION",         "ECLIPSE_WINDOW"       ]     },     "start_utc": { "type": "string", "format": "date-time" },     "peak_utc": { "type": "string", "format": "date-time" },     "end_utc": { "type": "string", "format": "date-time" },      "bodies": {       "type": "array",       "minItems": 1,       "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" }     },      "orb_used_deg": { "type": "number", "minimum": 0, "maximum": 15 },      "meta": {       "type": "object",       "additionalProperties": true,       "description": "e.g., natal_body, transit_body, aspect, ingress_sign, station_kind"     }   } } `  
+# 10) Golden Test Suite Plan (Regression Harness)
+ 
+This is how you stop Aethos from “quietly changing reality” in production.
+ 
+## 10.1 Test suite goals
+ 
+ 
+- Detect any change in: 
+ 
+  - planet longitudes (beyond tolerance)
+ 
+  - house assignments
+ 
+  - aspect detection
+ 
+  - retrograde flags
+ 
+  - derived sect/dignities
+ 
+  - event windows (peak times drift)
+ 
+
+ 
+ 
+
+ 
+## 10.2 Create **20 Golden Charts** (minimum)
+ 
+Split them deliberately:
+ 
+### A) “Standard” (8 charts)
+ 
+ 
+- spread across decades (1950s–2020s)
+ 
+- varied latitudes (equator, mid-latitude, high-latitude)
+ 
+- varied timezones and DST boundaries
+ 
+
+ 
+### B) “Edge cases” (12 charts)
+ 
+ 
+1. Birth near DST transition (spring forward)
+ 
+2. Birth near DST transition (fall back)
+ 
+3. High latitude: near Arctic Circle (houses tricky in quadrant systems)
+ 
+4. Moon at late degree (29°xx) sign boundary
+ 
+5. Mercury station day (speed near 0)
+ 
+6. Venus retrograde period
+ 
+7. Mars station day
+ 
+8. Leap day birth (Feb 29)
+ 
+9. Time unknown (null time; must produce reliability flags)
+ 
+10. Time approximate ±60 minutes (must produce reliability envelope)
+ 
+11. Birth at 00:00:00 boundary
+ 
+12. Birth at 23:59:59 boundary
+ 
+
+ 
+## 10.3 Assertions (what you compare)
+ 
+For each golden chart, store expected outputs:
+ 
+### Planet tolerances
+ 
+ 
+- longitude difference ≤ **0.0003°** (≈ 1 arcsecond) if using same ephemeris build
+ 
+- speed difference ≤ small epsilon
+ 
+
+ 
+### Derived features exact match
+ 
+ 
+- sign
+ 
+- house
+ 
+- retrograde boolean
+ 
+- sect
+ 
+- dignity status (given your dignity ruleset)
+ 
+
+ 
+### Aspect graph stable match
+ 
+ 
+- same set of aspect edges, same aspect types
+ 
+- orb difference within tolerance
+ 
+
+ 
+### Event windows stable match
+ 
+ 
+- peak time drift ≤ **5 minutes** for exact aspects/stations (tight)
+ 
+- start/end windows drift consistent with orb policy
+ 
+
+ 
+## 10.4 Snapshot testing format
+ 
+Store each golden output as:
+ 
+ 
+- canonical JSON
+ 
+- plus a reduced “summary digest”: 
+ 
+  - list of body longitudes rounded to 0.001°
+ 
+  - aspect list
+ 
+  - derived flags
+ 
+  - hash
+ 
+
+ 
+ 
+
+ 
+That makes diffs readable.
+ 
+## 10.5 CI behavior
+ 
+ 
+- On PR: run calculator against golden inputs
+ 
+- If drift occurs: 
+ 
+  - fail with a diff report
+ 
+  - require explicit “expected update” commit that bumps `calculator_version`
+ 
+Excellent—here’s the full upgrade, delivered as **(A) Option A schema modeling**, plus **(1) updated schemas**, **(2) TypeScript + Zod**, and **(3) Python validator + golden test runner skeleton**.
+ 
+Everything below is copy-pasteable and internally consistent.
+  
+## A) Option A modeling (correct handling of “local time”)
+ 
+**Rule:** treat *local* birth datetime as **naive components** + **IANA timezone**, and treat **UTC** as the only absolute timestamp.
+ 
+So the Birth Record stores:
+ 
+ 
+- `birth_local_date` (`YYYY-MM-DD`)
+ 
+- `birth_local_time` (`HH:MM[:SS]`)
+ 
+- `birth_timezone` (IANA, e.g. `America/Los_Angeles`)
+ 
+- `birth_utc_datetime` (`RFC3339 Z`)
+ 
+- `julian_day` (float)
+ 
+
+ 
+This avoids the category error of treating “local time” as an absolute instant.
+  
+# 1) Updated JSON Schemas (Draft 2020-12)
+ 
+### 1.1 Root: `aethos.canonical.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.canonical.v1.json",   "title": "Aethos Canonical Output (v1)",   "type": "object",   "additionalProperties": false,   "required": [     "schema_version",     "calculator",     "birth_record",     "config",     "western_chart",     "aspects",     "derived"   ],   "properties": {     "schema_version": { "type": "string", "const": "1.0.0" },     "calculator": { "$ref": "https://aethos.app/schemas/canonical/aethos.calculator_provenance.v1.json" },     "birth_record": { "$ref": "https://aethos.app/schemas/canonical/aethos.birth_record.v1.json" },     "config": { "$ref": "https://aethos.app/schemas/canonical/aethos.calc_config.v1.json" },     "western_chart": { "$ref": "https://aethos.app/schemas/canonical/aethos.western_chart.v1.json" },     "aspects": {       "type": "array",       "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.aspect_edge.v1.json" }     },     "derived": { "$ref": "https://aethos.app/schemas/canonical/aethos.derived_bundle.v1.json" },     "reliability": { "$ref": "https://aethos.app/schemas/canonical/aethos.reliability.v1.json" }   } } ` 
+### 1.2 Provenance: `aethos.calculator_provenance.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.calculator_provenance.v1.json",   "title": "Calculator Provenance (v1)",   "type": "object",   "additionalProperties": false,   "required": [     "calculator_version",     "build_hash",     "ephemeris",     "generated_at_utc",     "config_hash"   ],   "properties": {     "calculator_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },     "build_hash": { "type": "string", "minLength": 7, "maxLength": 64 },     "generated_at_utc": { "type": "string", "format": "date-time" },     "config_hash": { "type": "string", "minLength": 16, "maxLength": 128 },     "ephemeris": {       "type": "object",       "additionalProperties": false,       "required": ["provider", "swe_version", "fileset"],       "properties": {         "provider": { "type": "string", "enum": ["swisseph"] },         "swe_version": { "type": "string" },         "fileset": { "type": "string" }       }     }   } } ` 
+### 1.3 Birth Record (Option A): `aethos.birth_record.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.birth_record.v1.json",   "title": "Canonical Birth Record (v1) — Option A (Naive Local + IANA)",   "type": "object",   "additionalProperties": false,   "required": [     "subject_id",     "birth_local_date",     "birth_local_time",     "birth_timezone",     "birth_utc_datetime",     "julian_day",     "geo"   ],   "properties": {     "subject_id": { "type": "string", "format": "uuid" },      "birth_source": { "type": "string", "enum": ["certificate", "family_memory", "approx"] },     "time_accuracy_minutes": { "type": "integer", "minimum": 0, "maximum": 720 },      "birth_local_date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },     "birth_local_time": { "type": "string", "pattern": "^\\d{2}:\\d{2}(:\\d{2})?$" },     "birth_timezone": { "type": "string", "minLength": 3, "description": "IANA tz, e.g. America/Los_Angeles" },      "birth_utc_datetime": { "type": "string", "format": "date-time", "description": "Absolute moment in UTC (Z)" },      "julian_day": { "type": "number" },     "delta_t_seconds": { "type": "number" },      "geo": {       "type": "object",       "additionalProperties": false,       "required": ["lat", "lon"],       "properties": {         "lat": { "type": "number", "minimum": -90, "maximum": 90 },         "lon": { "type": "number", "minimum": -180, "maximum": 180 },         "place_label": { "type": "string" }       }     }   } } ` 
+### 1.4 Config: `aethos.calc_config.v1.json` (unchanged)
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.calc_config.v1.json",   "title": "Calculation Config (v1)",   "type": "object",   "additionalProperties": false,   "required": [     "zodiac_system",     "house_system",     "orb_policy",     "points_enabled"   ],   "properties": {     "zodiac_system": { "type": "string", "enum": ["tropical", "sidereal"] },     "ayanamsa": { "type": "string", "enum": ["lahiri", "raman", "fagan_bradley"] },     "house_system": { "type": "string", "enum": ["whole_sign", "placidus", "koch", "regiomontanus"] },     "orb_policy": {       "type": "object",       "additionalProperties": false,       "required": ["name", "major_aspects"],       "properties": {         "name": { "type": "string" },         "major_aspects": {           "type": "object",           "additionalProperties": false,           "required": ["conjunction", "opposition", "trine", "square", "sextile"],           "properties": {             "conjunction": { "type": "number", "minimum": 0, "maximum": 15 },             "opposition": { "type": "number", "minimum": 0, "maximum": 15 },             "trine": { "type": "number", "minimum": 0, "maximum": 15 },             "square": { "type": "number", "minimum": 0, "maximum": 15 },             "sextile": { "type": "number", "minimum": 0, "maximum": 15 }           }         }       }     },     "points_enabled": {       "type": "object",       "additionalProperties": false,       "properties": {         "lunar_nodes": { "type": "boolean" },         "chiron": { "type": "boolean" },         "asteroids": { "type": "array", "items": { "type": "string" } }       }     },     "include_velocity": { "type": "boolean", "default": true }   },   "allOf": [     {       "if": { "properties": { "zodiac_system": { "const": "sidereal" } } },       "then": { "required": ["ayanamsa"] }     }   ] } ` 
+### 1.5 Western chart + bodies + houses + enums (same as before)
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json",   "title": "Angle Degrees (0..360)",   "type": "number",   "minimum": 0,   "exclusiveMaximum": 360 } ` `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json",   "title": "Bodies Enum",   "type": "string",   "enum": [     "Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn",     "Uranus","Neptune","Pluto",     "NorthNode","SouthNode","Chiron"   ] } ` `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.planet_state.v1.json",   "title": "Planet / Body State (v1)",   "type": "object",   "additionalProperties": false,   "required": [     "body","lon","lat","distance_au",     "speed_lon","speed_lat","speed_dist",     "retrograde","sign","house"   ],   "properties": {     "body": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" },     "lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },     "lat": { "type": "number", "minimum": -90, "maximum": 90 },     "distance_au": { "type": "number", "minimum": 0 },     "speed_lon": { "type": "number", "description": "deg/day" },     "speed_lat": { "type": "number", "description": "deg/day" },     "speed_dist": { "type": "number", "description": "AU/day" },     "retrograde": { "type": "boolean" },     "sign": {       "type": "string",       "enum": ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"]     },     "house": { "type": "integer", "minimum": 1, "maximum": 12 },     "meta": { "type": "object", "additionalProperties": true }   } } ` `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.house_state.v1.json",   "title": "House State (v1)",   "type": "object",   "additionalProperties": false,   "required": ["house","sign","start_lon","end_lon"],   "properties": {     "house": { "type": "integer", "minimum": 1, "maximum": 12 },     "sign": {       "type": "string",       "enum": ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"]     },     "start_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },     "end_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },     "cusp_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" }   } } ` `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.western_chart.v1.json",   "title": "Western Chart (v1)",   "type": "object",   "additionalProperties": false,   "required": ["zodiac","house_system","angles","bodies","houses"],   "properties": {     "zodiac": { "type": "string", "enum": ["tropical","sidereal"] },     "ayanamsa": { "type": "string", "enum": ["lahiri","raman","fagan_bradley"] },     "house_system": { "type": "string", "enum": ["whole_sign","placidus","koch","regiomontanus"] },     "angles": {       "type": "object",       "additionalProperties": false,       "required": ["asc_lon","mc_lon"],       "properties": {         "asc_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },         "mc_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },         "desc_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },         "ic_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" }       }     },     "bodies": { "type": "array", "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.planet_state.v1.json" } },     "houses": { "type": "array", "minItems": 12, "maxItems": 12, "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.house_state.v1.json" } }   } } ` 
+### 1.6 Aspect edge (same)
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.aspect_edge.v1.json",   "title": "Aspect Edge (v1)",   "type": "object",   "additionalProperties": false,   "required": ["body_a","body_b","aspect","exact_angle","separation","orb","applying","strength"],   "properties": {     "body_a": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" },     "body_b": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" },     "aspect": { "type": "string", "enum": ["conjunction","opposition","trine","square","sextile","quincunx"] },     "exact_angle": { "type": "number", "minimum": 0, "maximum": 180 },     "separation": { "type": "number", "minimum": 0, "maximum": 180 },     "orb": { "type": "number", "minimum": 0, "maximum": 30 },     "applying": { "type": "boolean" },     "strength": { "type": "number", "minimum": 0, "maximum": 1 }   } } ` 
+### 1.7 Derived bundle + reliability (same as before)
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.derived_bundle.v1.json",   "title": "Derived Deterministic Bundle (v1)",   "type": "object",   "additionalProperties": false,   "required": ["sect","dignities","angularity"],   "properties": {     "sect": { "type": "string", "enum": ["diurnal","nocturnal"] },     "dignities": { "type": "array", "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.dignity_state.v1.json" } },     "angularity": { "type": "array", "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.angularity_state.v1.json" } },     "rulerships": { "type": "array", "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.rulership_edge.v1.json" } }   } } ` `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.dignity_state.v1.json",   "title": "Dignity State (v1)",   "type": "object",   "additionalProperties": false,   "required": ["body","sign","status"],   "properties": {     "body": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" },     "sign": { "type": "string", "enum": ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"] },     "status": { "type": "string", "enum": ["domicile","exaltation","detriment","fall","peregrine"] }   } } ` `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.angularity_state.v1.json",   "title": "Angularity State (v1)",   "type": "object",   "additionalProperties": false,   "required": ["body","class"],   "properties": {     "body": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" },     "class": { "type": "string", "enum": ["angular","succedent","cadent"] }   } } ` `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.rulership_edge.v1.json",   "title": "Rulership / Dispositor Edge (v1)",   "type": "object",   "additionalProperties": false,   "required": ["from","to","reason"],   "properties": {     "from": { "type": "string" },     "to": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" },     "reason": { "type": "string", "enum": ["sign_ruler","exaltation_ruler","triplicity_ruler","term_ruler","face_ruler"] }   } } ` `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.reliability.v1.json",   "title": "Reliability Flags (v1)",   "type": "object",   "additionalProperties": false,   "properties": {     "time_uncertainty_minutes": { "type": "integer", "minimum": 0, "maximum": 1440 },     "flags": {       "type": "array",       "items": {         "type": "string",         "enum": [           "HOUSES_UNRELIABLE",           "ANGLES_UNRELIABLE",           "MOON_SIGN_EDGE_CASE",           "ASPECTS_PARTIALLY_UNRELIABLE",           "EVENT_WINDOWS_UNRELIABLE"         ]       }     }   } } `  
+# 2) TypeScript types + Zod validators
+ 
+This is a **single file** you can drop into `packages/core-types/src/canonical.ts`.
+ 
+It:
+ 
+ 
+- defines TS types via `z.infer`
+ 
+- validates Option A birth record and all core structures
+ 
+- enforces strict objects (`.strict()`)
+ 
+
+ `import { z } from "zod";  /** ---------- Primitives ---------- */  export const Semver = z.string().regex(/^[0-9]+\.[0-9]+\.[0-9]+$/); export const GitHash = z.string().min(7).max(64); export const Uuid = z.string().uuid();  export const DateYYYYMMDD = z.string().regex(/^\d{4}-\d{2}-\d{2}$/); export const TimeHHMMSS = z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/); export const DateTimeRFC3339 = z.string().datetime();  export const AngleDeg = z.number().min(0).lt(360);  export const Sign = z.enum([   "Aries","Taurus","Gemini","Cancer","Leo","Virgo",   "Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces" ]);  export const Body = z.enum([   "Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn",   "Uranus","Neptune","Pluto",   "NorthNode","SouthNode","Chiron" ]);  /** ---------- Provenance ---------- */  export const CalculatorProvenance = z.object({   calculator_version: Semver,   build_hash: GitHash,   generated_at_utc: DateTimeRFC3339,   config_hash: z.string().min(16).max(128),   ephemeris: z.object({     provider: z.enum(["swisseph"]),     swe_version: z.string(),     fileset: z.string()   }).strict() }).strict();  /** ---------- Birth Record (Option A) ---------- */  export const BirthRecord = z.object({   subject_id: Uuid,    birth_source: z.enum(["certificate","family_memory","approx"]).optional(),   time_accuracy_minutes: z.number().int().min(0).max(720).optional(),    birth_local_date: DateYYYYMMDD,   birth_local_time: TimeHHMMSS,   birth_timezone: z.string().min(3),    birth_utc_datetime: DateTimeRFC3339,    julian_day: z.number(),   delta_t_seconds: z.number().optional(),    geo: z.object({     lat: z.number().min(-90).max(90),     lon: z.number().min(-180).max(180),     place_label: z.string().optional()   }).strict() }).strict();  /** ---------- Config ---------- */  export const OrbPolicy = z.object({   name: z.string(),   major_aspects: z.object({     conjunction: z.number().min(0).max(15),     opposition: z.number().min(0).max(15),     trine: z.number().min(0).max(15),     square: z.number().min(0).max(15),     sextile: z.number().min(0).max(15)   }).strict() }).strict();  export const CalcConfig = z.object({   zodiac_system: z.enum(["tropical","sidereal"]),   ayanamsa: z.enum(["lahiri","raman","fagan_bradley"]).optional(),   house_system: z.enum(["whole_sign","placidus","koch","regiomontanus"]),   orb_policy: OrbPolicy,   points_enabled: z.object({     lunar_nodes: z.boolean().optional(),     chiron: z.boolean().optional(),     asteroids: z.array(z.string()).optional()   }).strict(),   include_velocity: z.boolean().optional().default(true) }).strict().superRefine((val, ctx) => {   if (val.zodiac_system === "sidereal" && !val.ayanamsa) {     ctx.addIssue({ code: z.ZodIssueCode.custom, message: "ayanamsa is required when zodiac_system=sidereal" });   } });  /** ---------- Western Chart ---------- */  export const PlanetState = z.object({   body: Body,   lon: AngleDeg,   lat: z.number().min(-90).max(90),   distance_au: z.number().min(0),    speed_lon: z.number(),   speed_lat: z.number(),   speed_dist: z.number(),    retrograde: z.boolean(),    sign: Sign,   house: z.number().int().min(1).max(12),    meta: z.record(z.any()).optional() }).strict();  export const HouseState = z.object({   house: z.number().int().min(1).max(12),   sign: Sign,   start_lon: AngleDeg,   end_lon: AngleDeg,   cusp_lon: AngleDeg.optional() }).strict();  export const WesternChart = z.object({   zodiac: z.enum(["tropical","sidereal"]),   ayanamsa: z.enum(["lahiri","raman","fagan_bradley"]).optional(),   house_system: z.enum(["whole_sign","placidus","koch","regiomontanus"]),   angles: z.object({     asc_lon: AngleDeg,     mc_lon: AngleDeg,     desc_lon: AngleDeg.optional(),     ic_lon: AngleDeg.optional()   }).strict(),   bodies: z.array(PlanetState),   houses: z.array(HouseState).length(12) }).strict();  /** ---------- Aspects ---------- */  export const AspectEdge = z.object({   body_a: Body,   body_b: Body,   aspect: z.enum(["conjunction","opposition","trine","square","sextile","quincunx"]),   exact_angle: z.number().min(0).max(180),   separation: z.number().min(0).max(180),   orb: z.number().min(0).max(30),   applying: z.boolean(),   strength: z.number().min(0).max(1) }).strict();  /** ---------- Derived ---------- */  export const DignityState = z.object({   body: Body,   sign: Sign,   status: z.enum(["domicile","exaltation","detriment","fall","peregrine"]) }).strict();  export const AngularityState = z.object({   body: Body,   class: z.enum(["angular","succedent","cadent"]) }).strict();  export const RulershipEdge = z.object({   from: z.string(),   to: Body,   reason: z.enum(["sign_ruler","exaltation_ruler","triplicity_ruler","term_ruler","face_ruler"]) }).strict();  export const DerivedBundle = z.object({   sect: z.enum(["diurnal","nocturnal"]),   dignities: z.array(DignityState),   angularity: z.array(AngularityState),   rulerships: z.array(RulershipEdge).optional() }).strict();  /** ---------- Reliability ---------- */  export const Reliability = z.object({   time_uncertainty_minutes: z.number().int().min(0).max(1440).optional(),   flags: z.array(z.enum([     "HOUSES_UNRELIABLE",     "ANGLES_UNRELIABLE",     "MOON_SIGN_EDGE_CASE",     "ASPECTS_PARTIALLY_UNRELIABLE",     "EVENT_WINDOWS_UNRELIABLE"   ])).optional() }).strict();  /** ---------- Canonical Output ---------- */  export const CanonicalOutput = z.object({   schema_version: z.literal("1.0.0"),   calculator: CalculatorProvenance,   birth_record: BirthRecord,   config: CalcConfig,   western_chart: WesternChart,   aspects: z.array(AspectEdge),   derived: DerivedBundle,   reliability: Reliability.optional() }).strict();  export type TCanonicalOutput = z.infer<typeof CanonicalOutput>; ` 
+**How you use it:**
+ `import { CanonicalOutput } from "./canonical";  const parsed = CanonicalOutput.parse(jsonFromCalculator); // throws if invalid `  
+# 3) Python validator harness + golden test runner skeleton
+ 
+This is a minimal but serious structure you can drop into `tools/validation/`.
+ 
+## 3.1 `requirements.txt`
+ `jsonschema==4.23.0 pytest==8.3.2 ` 
+## 3.2 Directory layout
+ `schemas/   canonical/     aethos.canonical.v1.json     aethos.birth_record.v1.json     ... (all schema files) goldens/   inputs/     chart_001.input.json     ...   outputs/     chart_001.canonical.json     ... tools/   validation/     validate_one.py     golden_runner.py tests/   test_golden.py ` 
+## 3.3 `tools/validation/validate_one.py`
+ `from __future__ import annotations  import json from pathlib import Path from jsonschema import Draft202012Validator, RefResolver  def load_json(path: Path) -> dict:     return json.loads(path.read_text(encoding="utf-8"))  def build_resolver(schema_dir: Path) -> RefResolver:     """     Resolves $ref URLs to local files by mapping:     https://aethos.app/schemas/... -> schema_dir/...     """     def resolve_remote(uri: str):         # Convert URL path into local path         # Example: https://aethos.app/schemas/canonical/aethos.birth_record.v1.json         # -> schema_dir / "canonical" / "aethos.birth_record.v1.json"         prefix = "https://aethos.app/schemas/"         if not uri.startswith(prefix):             raise FileNotFoundError(f"Unsupported ref uri: {uri}")         rel = uri[len(prefix):]         local = schema_dir / rel         if not local.exists():             raise FileNotFoundError(f"Missing schema file for ref: {uri} -> {local}")         return load_json(local)      store = {}      # Preload all json schemas into store (optional but robust)     for p in schema_dir.rglob("*.json"):         s = load_json(p)         if "$id" in s:             store[s["$id"]] = s      resolver = RefResolver.from_schema(         store.get("https://aethos.app/schemas/canonical/aethos.canonical.v1.json", {}),         store=store     )     resolver.resolve_remote = resolve_remote  # type: ignore[attr-defined]     return resolver  def validate(instance_path: Path, root_schema_path: Path, schema_dir: Path) -> None:     instance = load_json(instance_path)     root_schema = load_json(root_schema_path)      resolver = build_resolver(schema_dir)     validator = Draft202012Validator(root_schema, resolver=resolver)      errors = sorted(validator.iter_errors(instance), key=lambda e: e.path)     if errors:         msg = "\n".join(             [f"- {list(e.path)}: {e.message}" for e in errors[:50]]         )         raise SystemExit(f"Schema validation failed for {instance_path}:\n{msg}")      print(f"OK: {instance_path}")  if __name__ == "__main__":     import argparse     ap = argparse.ArgumentParser()     ap.add_argument("--instance", required=True, help="Path to canonical output JSON")     ap.add_argument("--schema-dir", default="schemas", help="Directory containing schemas/")     ap.add_argument("--root-schema", default="schemas/canonical/aethos.canonical.v1.json")     args = ap.parse_args()      validate(         instance_path=Path(args.instance),         root_schema_path=Path(args.root_schema),         schema_dir=Path(args.schema_dir)     ) ` 
+## 3.4 `tools/validation/golden_runner.py`
+ 
+This runs schema validation + optional numeric tolerances (placeholders included).
+ `from __future__ import annotations  import json from pathlib import Path from datetime import datetime  from tools.validation.validate_one import validate  SCHEMA_DIR = Path("schemas") ROOT_SCHEMA = Path("schemas/canonical/aethos.canonical.v1.json")  def load_json(path: Path) -> dict:     return json.loads(path.read_text(encoding="utf-8"))  def assert_float_close(a: float, b: float, tol: float, label: str) -> None:     if abs(a - b) > tol:         raise AssertionError(f"{label} drift: {a} vs {b} (tol={tol})")  def compare_planets(expected: dict, actual: dict, lon_tol_deg: float = 0.0003) -> None:     exp_bodies = {p["body"]: p for p in expected["western_chart"]["bodies"]}     act_bodies = {p["body"]: p for p in actual["western_chart"]["bodies"]}      if exp_bodies.keys() != act_bodies.keys():         raise AssertionError(f"Body set changed: expected={sorted(exp_bodies.keys())} actual={sorted(act_bodies.keys())}")      for body in exp_bodies.keys():         e = exp_bodies[body]         a = act_bodies[body]         assert_float_close(e["lon"], a["lon"], lon_tol_deg, f"{body}.lon")         if e.get("retrograde") != a.get("retrograde"):             raise AssertionError(f"{body}.retrograde changed: {e.get('retrograde')} -> {a.get('retrograde')}")         if e.get("sign") != a.get("sign"):             raise AssertionError(f"{body}.sign changed: {e.get('sign')} -> {a.get('sign')}")         if e.get("house") != a.get("house"):             raise AssertionError(f"{body}.house changed: {e.get('house')} -> {a.get('house')}")  def run_one(expected_path: Path, actual_path: Path) -> None:     # 1) Schema validation on both     validate(expected_path, ROOT_SCHEMA, SCHEMA_DIR)     validate(actual_path, ROOT_SCHEMA, SCHEMA_DIR)      expected = load_json(expected_path)     actual = load_json(actual_path)      # 2) Version guard (optional): ensure actual declares calculator_version etc.     # You can assert calculator_version if you want strict equality across goldens.      # 3) Numeric & boolean drift checks (starter set)     compare_planets(expected, actual, lon_tol_deg=0.0003)  def run_all(golden_dir: Path = Path("goldens/outputs")) -> None:     expected_files = sorted(golden_dir.glob("*.canonical.json"))     if not expected_files:         raise SystemExit(f"No golden outputs found in {golden_dir}")      # Convention: actual output files are placed in goldens/actual/     actual_dir = Path("goldens/actual")     actual_dir.mkdir(parents=True, exist_ok=True)      # You wire this into your calculator output generator in CI to populate goldens/actual.     failures = 0     for exp in expected_files:         act = actual_dir / exp.name         if not act.exists():             print(f"SKIP (missing actual): {act}")             failures += 1             continue          try:             run_one(exp, act)             print(f"PASS: {exp.name}")         except Exception as e:             failures += 1             print(f"FAIL: {exp.name} -> {e}")      if failures:         raise SystemExit(f"{failures} golden test(s) failed")     print("All golden tests passed")  if __name__ == "__main__":     run_all() ` 
+## 3.5 `tests/test_golden.py` (pytest hook)
+ `from pathlib import Path import subprocess  def test_goldens():     # Runs the golden runner; CI can populate goldens/actual first.     subprocess.run(         ["python", "-m", "tools.validation.golden_runner"],         check=True     ) `  

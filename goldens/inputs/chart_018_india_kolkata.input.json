@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "subject_id": "33333333-4444-5555-6666-777777777777",
+  "birth": {
+    "birth_source": "certificate",
+    "time_accuracy_minutes": 0,
+    "birth_local_date": "1992-08-15",
+    "birth_local_time": "11:45:00",
+    "birth_timezone": "Asia/Kolkata",
+    "geo": {
+      "lat": 22.5726,
+      "lon": 88.3639,
+      "place_label": "Kolkata, India"
+    }
+  },
+  "config": {
+    "zodiac_system": "tropical",
+    "house_system": "whole_sign",
+    "orb_policy": {
+      "name": "AethosMajor_8deg",
+      "major_aspects": {
+        "conjunction": 8,
+        "opposition": 8,
+        "trine": 8,
+        "square": 7,
+        "sextile": 6
+      }
+    },
+    "points_enabled": {
+      "lunar_nodes": true,
+      "chiron": true
+    }
+  },
+  "meta": {
+    "tag": "india",
+    "notes": "IST UTC+5:30 — half-hour offset timezone."
+  }
+}

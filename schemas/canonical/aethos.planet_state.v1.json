@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aethos.app/schemas/canonical/aethos.planet_state.v1.json",
+  "title": "Planet / Body State (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["body", "lon", "lat", "distance_au", "speed_lon", "speed_lat", "speed_dist", "retrograde", "sign", "house"],
+  "properties": {
+    "body": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" },
+    "lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },
+    "lat": { "type": "number", "minimum": -90, "maximum": 90 },
+    "distance_au": { "type": "number", "minimum": 0 },
+    "speed_lon": { "type": "number" },
+    "speed_lat": { "type": "number" },
+    "speed_dist": { "type": "number" },
+    "retrograde": { "type": "boolean" },
+    "sign": {
+      "type": "string",
+      "enum": ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"]
+    },
+    "house": { "type": "integer", "minimum": 1, "maximum": 12 },
+    "meta": { "type": "object", "additionalProperties": true }
+  }
+}

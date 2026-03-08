@@ -1,0 +1,733 @@
+{
+  "schema_version": "1.0.0",
+  "calculator": {
+    "calculator_version": "1.0.0",
+    "build_hash": "aethos-moshier-v1",
+    "ephemeris": {
+      "provider": "moshier",
+      "swe_version": "2.2.0",
+      "fileset": "Moshier analytical ephemeris (built-in)"
+    },
+    "generated_at_utc": "2026-03-04T08:05:59.972Z",
+    "config_hash": "000000001ae2bf0d"
+  },
+  "birth_record": {
+    "subject_id": "99999999-9999-9999-9999-999999999999",
+    "birth_source": "certificate",
+    "time_accuracy_minutes": 0,
+    "birth_local_date": "1996-10-27",
+    "birth_local_time": "02:30:00",
+    "birth_timezone": "Australia/Sydney",
+    "birth_utc_datetime": "1996-10-26T15:30:00.000Z",
+    "julian_day": 2450383.145833,
+    "geo": {
+      "lat": -33.8688,
+      "lon": 151.2093,
+      "place_label": "Sydney, Australia"
+    },
+    "tz_invalid_time_policy": "normalize_forward",
+    "tz_ambiguous_time_policy": "prefer_earliest",
+    "tz_resolution": "invalid"
+  },
+  "config": {
+    "zodiac_system": "tropical",
+    "house_system": "whole_sign",
+    "orb_policy": {
+      "name": "AethosMajor_8deg",
+      "major_aspects": {
+        "conjunction": 8,
+        "opposition": 8,
+        "trine": 8,
+        "square": 7,
+        "sextile": 6
+      }
+    },
+    "points_enabled": {
+      "lunar_nodes": true,
+      "chiron": true
+    }
+  },
+  "western_chart": {
+    "zodiac": "tropical",
+    "house_system": "whole_sign",
+    "angles": {
+      "asc_lon": 18.103,
+      "mc_lon": 289.862,
+      "desc_lon": 198.103,
+      "ic_lon": 109.862
+    },
+    "bodies": [
+      {
+        "body": "Sun",
+        "lon": 213.494,
+        "lat": 0,
+        "distance_au": 0.993561,
+        "speed_lon": 0.9973,
+        "speed_lat": 0,
+        "speed_dist": 0,
+        "retrograde": false,
+        "sign": "Scorpio",
+        "house": 7
+      },
+      {
+        "body": "Moon",
+        "lon": 34.182,
+        "lat": 0,
+        "distance_au": 0,
+        "speed_lon": 13.7137,
+        "speed_lat": 0,
+        "speed_dist": 0,
+        "retrograde": false,
+        "sign": "Taurus",
+        "house": 1
+      },
+      {
+        "body": "Mercury",
+        "lon": 209.334,
+        "lat": 0,
+        "distance_au": 0,
+        "speed_lon": 1.6788,
+        "speed_lat": 0,
+        "speed_dist": 0,
+        "retrograde": false,
+        "sign": "Libra",
+        "house": 7
+      },
+      {
+        "body": "Venus",
+        "lon": 176.562,
+        "lat": 0,
+        "distance_au": 0,
+        "speed_lon": 1.2012,
+        "speed_lat": 0,
+        "speed_dist": 0,
+        "retrograde": false,
+        "sign": "Virgo",
+        "house": 6
+      },
+      {
+        "body": "Mars",
+        "lon": 147.957,
+        "lat": 0,
+        "distance_au": 0,
+        "speed_lon": 0.562,
+        "speed_lat": 0,
+        "speed_dist": 0,
+        "retrograde": false,
+        "sign": "Leo",
+        "house": 5
+      },
+      {
+        "body": "Jupiter",
+        "lon": 281.988,
+        "lat": 0,
+        "distance_au": 0,
+        "speed_lon": 0.1473,
+        "speed_lat": 0,
+        "speed_dist": 0,
+        "retrograde": false,
+        "sign": "Capricorn",
+        "house": 9
+      },
+      {
+        "body": "Saturn",
+        "lon": 1.82,
+        "lat": 0,
+        "distance_au": 0,
+        "speed_lon": -0.0599,
+        "speed_lat": 0,
+        "speed_dist": 0,
+        "retrograde": true,
+        "sign": "Aries",
+        "house": 12
+      },
+      {
+        "body": "Uranus",
+        "lon": 300.76,
+        "lat": 0,
+        "distance_au": 0,
+        "speed_lon": 0.0141,
+        "speed_lat": 0,
+        "speed_dist": 0,
+        "retrograde": false,
+        "sign": "Aquarius",
+        "house": 10
+      },
+      {
+        "body": "Neptune",
+        "lon": 295.088,
+        "lat": 0,
+        "distance_au": 0,
+        "speed_lon": 0.0111,
+        "speed_lat": 0,
+        "speed_dist": 0,
+        "retrograde": false,
+        "sign": "Capricorn",
+        "house": 10
+      },
+      {
+        "body": "Pluto",
+        "lon": 241.869,
+        "lat": 0,
+        "distance_au": 0,
+        "speed_lon": 0.0358,
+        "speed_lat": 0,
+        "speed_dist": 0,
+        "retrograde": false,
+        "sign": "Sagittarius",
+        "house": 8
+      },
+      {
+        "body": "Chiron",
+        "lon": 202.895,
+        "lat": 0,
+        "distance_au": 0,
+        "speed_lon": 0.1432,
+        "speed_lat": 0,
+        "speed_dist": 0,
+        "retrograde": false,
+        "sign": "Libra",
+        "house": 7
+      }
+    ],
+    "houses": [
+      {
+        "house": 1,
+        "sign": "Aries",
+        "start_lon": 0,
+        "end_lon": 30,
+        "cusp_lon": 0
+      },
+      {
+        "house": 2,
+        "sign": "Taurus",
+        "start_lon": 30,
+        "end_lon": 60,
+        "cusp_lon": 30
+      },
+      {
+        "house": 3,
+        "sign": "Gemini",
+        "start_lon": 60,
+        "end_lon": 90,
+        "cusp_lon": 60
+      },
+      {
+        "house": 4,
+        "sign": "Cancer",
+        "start_lon": 90,
+        "end_lon": 120,
+        "cusp_lon": 90
+      },
+      {
+        "house": 5,
+        "sign": "Leo",
+        "start_lon": 120,
+        "end_lon": 150,
+        "cusp_lon": 120
+      },
+      {
+        "house": 6,
+        "sign": "Virgo",
+        "start_lon": 150,
+        "end_lon": 180,
+        "cusp_lon": 150
+      },
+      {
+        "house": 7,
+        "sign": "Libra",
+        "start_lon": 180,
+        "end_lon": 210,
+        "cusp_lon": 180
+      },
+      {
+        "house": 8,
+        "sign": "Scorpio",
+        "start_lon": 210,
+        "end_lon": 240,
+        "cusp_lon": 210
+      },
+      {
+        "house": 9,
+        "sign": "Sagittarius",
+        "start_lon": 240,
+        "end_lon": 270,
+        "cusp_lon": 240
+      },
+      {
+        "house": 10,
+        "sign": "Capricorn",
+        "start_lon": 270,
+        "end_lon": 300,
+        "cusp_lon": 270
+      },
+      {
+        "house": 11,
+        "sign": "Aquarius",
+        "start_lon": 300,
+        "end_lon": 330,
+        "cusp_lon": 300
+      },
+      {
+        "house": 12,
+        "sign": "Pisces",
+        "start_lon": 330,
+        "end_lon": 0,
+        "cusp_lon": 330
+      }
+    ]
+  },
+  "aspects": [
+    {
+      "body_a": "Saturn",
+      "body_b": "Pluto",
+      "aspect": "trine",
+      "exact_angle": 120,
+      "separation": 119.951,
+      "orb": 0.049,
+      "applying": false,
+      "strength": 0.994
+    },
+    {
+      "body_a": "Sun",
+      "body_b": "Moon",
+      "aspect": "opposition",
+      "exact_angle": 180,
+      "separation": 179.312,
+      "orb": 0.688,
+      "applying": false,
+      "strength": 0.914
+    },
+    {
+      "body_a": "Saturn",
+      "body_b": "Uranus",
+      "aspect": "sextile",
+      "exact_angle": 60,
+      "separation": 61.06,
+      "orb": 1.06,
+      "applying": true,
+      "strength": 0.823
+    },
+    {
+      "body_a": "Venus",
+      "body_b": "Neptune",
+      "aspect": "trine",
+      "exact_angle": 120,
+      "separation": 118.526,
+      "orb": 1.474,
+      "applying": false,
+      "strength": 0.816
+    },
+    {
+      "body_a": "Uranus",
+      "body_b": "Pluto",
+      "aspect": "sextile",
+      "exact_angle": 60,
+      "separation": 58.891,
+      "orb": 1.109,
+      "applying": false,
+      "strength": 0.815
+    },
+    {
+      "body_a": "Mercury",
+      "body_b": "Uranus",
+      "aspect": "square",
+      "exact_angle": 90,
+      "separation": 91.426,
+      "orb": 1.426,
+      "applying": true,
+      "strength": 0.796
+    },
+    {
+      "body_a": "Mercury",
+      "body_b": "Mars",
+      "aspect": "sextile",
+      "exact_angle": 60,
+      "separation": 61.377,
+      "orb": 1.377,
+      "applying": false,
+      "strength": 0.77
+    },
+    {
+      "body_a": "Neptune",
+      "body_b": "Chiron",
+      "aspect": "square",
+      "exact_angle": 90,
+      "separation": 92.193,
+      "orb": 2.193,
+      "applying": true,
+      "strength": 0.687
+    },
+    {
+      "body_a": "Sun",
+      "body_b": "Uranus",
+      "aspect": "square",
+      "exact_angle": 90,
+      "separation": 87.266,
+      "orb": 2.734,
+      "applying": false,
+      "strength": 0.609
+    },
+    {
+      "body_a": "Moon",
+      "body_b": "Uranus",
+      "aspect": "square",
+      "exact_angle": 90,
+      "separation": 93.422,
+      "orb": 3.422,
+      "applying": false,
+      "strength": 0.511
+    },
+    {
+      "body_a": "Sun",
+      "body_b": "Mercury",
+      "aspect": "conjunction",
+      "exact_angle": 0,
+      "separation": 4.16,
+      "orb": 4.16,
+      "applying": true,
+      "strength": 0.48
+    },
+    {
+      "body_a": "Venus",
+      "body_b": "Uranus",
+      "aspect": "trine",
+      "exact_angle": 120,
+      "separation": 124.198,
+      "orb": 4.198,
+      "applying": true,
+      "strength": 0.475
+    },
+    {
+      "body_a": "Sun",
+      "body_b": "Saturn",
+      "aspect": "quincunx",
+      "exact_angle": 150,
+      "separation": 148.326,
+      "orb": 1.674,
+      "applying": false,
+      "strength": 0.442
+    },
+    {
+      "body_a": "Mars",
+      "body_b": "Pluto",
+      "aspect": "square",
+      "exact_angle": 90,
+      "separation": 93.912,
+      "orb": 3.912,
+      "applying": true,
+      "strength": 0.441
+    },
+    {
+      "body_a": "Moon",
+      "body_b": "Mercury",
+      "aspect": "opposition",
+      "exact_angle": 180,
+      "separation": 175.152,
+      "orb": 4.848,
+      "applying": false,
+      "strength": 0.394
+    },
+    {
+      "body_a": "Mercury",
+      "body_b": "Neptune",
+      "aspect": "square",
+      "exact_angle": 90,
+      "separation": 85.754,
+      "orb": 4.246,
+      "applying": false,
+      "strength": 0.393
+    },
+    {
+      "body_a": "Venus",
+      "body_b": "Saturn",
+      "aspect": "opposition",
+      "exact_angle": 180,
+      "separation": 174.742,
+      "orb": 5.258,
+      "applying": true,
+      "strength": 0.343
+    },
+    {
+      "body_a": "Uranus",
+      "body_b": "Neptune",
+      "aspect": "conjunction",
+      "exact_angle": 0,
+      "separation": 5.672,
+      "orb": 5.672,
+      "applying": false,
+      "strength": 0.291
+    },
+    {
+      "body_a": "Moon",
+      "body_b": "Pluto",
+      "aspect": "quincunx",
+      "exact_angle": 150,
+      "separation": 152.313,
+      "orb": 2.313,
+      "applying": false,
+      "strength": 0.229
+    },
+    {
+      "body_a": "Moon",
+      "body_b": "Mars",
+      "aspect": "trine",
+      "exact_angle": 120,
+      "separation": 113.775,
+      "orb": 6.225,
+      "applying": false,
+      "strength": 0.222
+    },
+    {
+      "body_a": "Mercury",
+      "body_b": "Chiron",
+      "aspect": "conjunction",
+      "exact_angle": 0,
+      "separation": 6.439,
+      "orb": 6.439,
+      "applying": false,
+      "strength": 0.195
+    },
+    {
+      "body_a": "Mercury",
+      "body_b": "Saturn",
+      "aspect": "quincunx",
+      "exact_angle": 150,
+      "separation": 152.486,
+      "orb": 2.486,
+      "applying": true,
+      "strength": 0.171
+    },
+    {
+      "body_a": "Mars",
+      "body_b": "Chiron",
+      "aspect": "sextile",
+      "exact_angle": 60,
+      "separation": 54.938,
+      "orb": 5.062,
+      "applying": false,
+      "strength": 0.156
+    },
+    {
+      "body_a": "Venus",
+      "body_b": "Pluto",
+      "aspect": "sextile",
+      "exact_angle": 60,
+      "separation": 65.307,
+      "orb": 5.307,
+      "applying": true,
+      "strength": 0.116
+    },
+    {
+      "body_a": "Sun",
+      "body_b": "Mars",
+      "aspect": "sextile",
+      "exact_angle": 60,
+      "separation": 65.537,
+      "orb": 5.537,
+      "applying": false,
+      "strength": 0.077
+    },
+    {
+      "body_a": "Mars",
+      "body_b": "Uranus",
+      "aspect": "quincunx",
+      "exact_angle": 150,
+      "separation": 152.803,
+      "orb": 2.803,
+      "applying": true,
+      "strength": 0.066
+    },
+    {
+      "body_a": "Mars",
+      "body_b": "Neptune",
+      "aspect": "quincunx",
+      "exact_angle": 150,
+      "separation": 147.131,
+      "orb": 2.869,
+      "applying": false,
+      "strength": 0.044
+    },
+    {
+      "body_a": "Moon",
+      "body_b": "Jupiter",
+      "aspect": "trine",
+      "exact_angle": 120,
+      "separation": 112.194,
+      "orb": 7.806,
+      "applying": true,
+      "strength": 0.024
+    }
+  ],
+  "derived": {
+    "sect": "nocturnal",
+    "dignities": [
+      {
+        "body": "Sun",
+        "sign": "Scorpio",
+        "status": "peregrine"
+      },
+      {
+        "body": "Moon",
+        "sign": "Taurus",
+        "status": "exaltation"
+      },
+      {
+        "body": "Mercury",
+        "sign": "Libra",
+        "status": "peregrine"
+      },
+      {
+        "body": "Venus",
+        "sign": "Virgo",
+        "status": "fall"
+      },
+      {
+        "body": "Mars",
+        "sign": "Leo",
+        "status": "peregrine"
+      },
+      {
+        "body": "Jupiter",
+        "sign": "Capricorn",
+        "status": "fall"
+      },
+      {
+        "body": "Saturn",
+        "sign": "Aries",
+        "status": "fall"
+      },
+      {
+        "body": "Uranus",
+        "sign": "Aquarius",
+        "status": "domicile"
+      },
+      {
+        "body": "Neptune",
+        "sign": "Capricorn",
+        "status": "peregrine"
+      },
+      {
+        "body": "Pluto",
+        "sign": "Sagittarius",
+        "status": "peregrine"
+      },
+      {
+        "body": "Chiron",
+        "sign": "Libra",
+        "status": "peregrine"
+      }
+    ],
+    "angularity": [
+      {
+        "body": "Sun",
+        "class": "angular"
+      },
+      {
+        "body": "Moon",
+        "class": "angular"
+      },
+      {
+        "body": "Mercury",
+        "class": "angular"
+      },
+      {
+        "body": "Venus",
+        "class": "cadent"
+      },
+      {
+        "body": "Mars",
+        "class": "succedent"
+      },
+      {
+        "body": "Jupiter",
+        "class": "cadent"
+      },
+      {
+        "body": "Saturn",
+        "class": "cadent"
+      },
+      {
+        "body": "Uranus",
+        "class": "angular"
+      },
+      {
+        "body": "Neptune",
+        "class": "angular"
+      },
+      {
+        "body": "Pluto",
+        "class": "succedent"
+      },
+      {
+        "body": "Chiron",
+        "class": "angular"
+      }
+    ],
+    "rulerships": [
+      {
+        "from": "House1",
+        "to": "Mars",
+        "reason": "sign_ruler"
+      },
+      {
+        "from": "House2",
+        "to": "Venus",
+        "reason": "sign_ruler"
+      },
+      {
+        "from": "House3",
+        "to": "Mercury",
+        "reason": "sign_ruler"
+      },
+      {
+        "from": "House4",
+        "to": "Moon",
+        "reason": "sign_ruler"
+      },
+      {
+        "from": "House5",
+        "to": "Sun",
+        "reason": "sign_ruler"
+      },
+      {
+        "from": "House6",
+        "to": "Mercury",
+        "reason": "sign_ruler"
+      },
+      {
+        "from": "House7",
+        "to": "Venus",
+        "reason": "sign_ruler"
+      },
+      {
+        "from": "House8",
+        "to": "Mars",
+        "reason": "sign_ruler"
+      },
+      {
+        "from": "House9",
+        "to": "Jupiter",
+        "reason": "sign_ruler"
+      },
+      {
+        "from": "House10",
+        "to": "Saturn",
+        "reason": "sign_ruler"
+      },
+      {
+        "from": "House11",
+        "to": "Saturn",
+        "reason": "sign_ruler"
+      },
+      {
+        "from": "House12",
+        "to": "Jupiter",
+        "reason": "sign_ruler"
+      }
+    ]
+  },
+  "reliability": {
+    "time_uncertainty_minutes": 0
+  }
+}

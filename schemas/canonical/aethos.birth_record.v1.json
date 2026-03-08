@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aethos.app/schemas/canonical/aethos.birth_record.v1.json",
+  "title": "Canonical Birth Record (v1) — Option A (Naive Local + IANA)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "subject_id", "birth_local_date", "birth_local_time", "birth_timezone",
+    "birth_utc_datetime", "julian_day", "geo",
+    "tz_invalid_time_policy", "tz_ambiguous_time_policy", "tz_resolution"
+  ],
+  "properties": {
+    "subject_id": { "type": "string" },
+    "birth_source": { "type": "string", "enum": ["certificate", "family_memory", "approx"] },
+    "time_accuracy_minutes": { "type": "integer", "minimum": 0, "maximum": 1440 },
+    "birth_local_date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+    "birth_local_time": { "type": "string", "pattern": "^\\d{2}:\\d{2}(:\\d{2})?$" },
+    "birth_timezone": { "type": "string", "minLength": 3 },
+    "birth_utc_datetime": { "type": "string", "format": "date-time" },
+    "julian_day": { "type": "number" },
+    "delta_t_seconds": { "type": "number" },
+    "geo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lat", "lon"],
+      "properties": {
+        "lat": { "type": "number", "minimum": -90, "maximum": 90 },
+        "lon": { "type": "number", "minimum": -180, "maximum": 180 },
+        "place_label": { "type": "string" }
+      }
+    },
+    "tz_invalid_time_policy": {
+      "type": "string",
+      "enum": ["error", "normalize_forward"]
+    },
+    "tz_ambiguous_time_policy": {
+      "type": "string",
+      "enum": ["prefer_earliest", "prefer_latest"]
+    },
+    "tz_resolution": {
+      "type": "string",
+      "enum": ["ok", "ambiguous", "invalid", "time_unknown"]
+    }
+  }
+}

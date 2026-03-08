@@ -1,0 +1,806 @@
+Done — here’s a **one-command golden workflow**: validate inputs → run calculator (HTTP) → write `goldens/actual/` → schema-validate outputs → compare against `goldens/outputs/` → print a readable diff summary → exit non-zero on drift.
+ 
+I’m giving you a **Python CLI** (most frictionless in CI) plus a tiny `Makefile` and GitHub Actions snippet.
+  
+# 1) Files to add
+ 
+## 1.1 `tools/goldens/run_goldens.py`
+ `from __future__ import annotations  import argparse import hashlib import json import os import sys from dataclasses import dataclass from pathlib import Path from typing import Any, Dict, List, Tuple  import urllib.request import urllib.error  from jsonschema import Draft202012Validator, RefResolver  # ------------------------- # Paths / defaults # ------------------------- ROOT = Path(".") SCHEMAS_DIR = ROOT / "schemas" INPUT_SCHEMA = SCHEMAS_DIR / "input" / "aethos.calc_request.v1.json" CANON_SCHEMA = SCHEMAS_DIR / "canonical" / "aethos.canonical.v1.json"  GOLDENS_INPUTS = ROOT / "goldens" / "inputs" GOLDENS_EXPECTED = ROOT / "goldens" / "outputs" GOLDENS_ACTUAL = ROOT / "goldens" / "actual"  DEFAULT_CALC_URL = os.environ.get("AETHOS_CALC_URL", "http://localhost:8080/calc/canonical")  # ------------------------- # JSON helpers # ------------------------- def load_json(path: Path) -> Dict[str, Any]:     return json.loads(path.read_text(encoding="utf-8"))  def write_json(path: Path, obj: Dict[str, Any]) -> None:     path.parent.mkdir(parents=True, exist_ok=True)     path.write_text(json.dumps(obj, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")  def sha256_text(s: str) -> str:     return hashlib.sha256(s.encode("utf-8")).hexdigest()  # ------------------------- # Schema resolver (local $ref) # ------------------------- def build_resolver(schema_dir: Path) -> RefResolver:     prefix = "https://aethos.app/schemas/"      def resolve_remote(uri: str):         if not uri.startswith(prefix):             raise FileNotFoundError(f"Unsupported ref uri: {uri}")         rel = uri[len(prefix):]         local = schema_dir / rel         if not local.exists():             raise FileNotFoundError(f"Missing schema file for ref: {uri} -> {local}")         return load_json(local)      store = {}     for p in schema_dir.rglob("*.json"):         s = load_json(p)         if "$id" in s:             store[s["$id"]] = s      resolver = RefResolver.from_schema(store.get("https://aethos.app/schemas/canonical/aethos.canonical.v1.json", {}), store=store)     resolver.resolve_remote = resolve_remote  # type: ignore[attr-defined]     return resolver  def validate_schema(instance: Dict[str, Any], root_schema_path: Path, schema_dir: Path) -> List[str]:     root_schema = load_json(root_schema_path)     resolver = build_resolver(schema_dir)     validator = Draft202012Validator(root_schema, resolver=resolver)     errors = sorted(validator.iter_errors(instance), key=lambda e: list(e.path))     msgs = []     for e in errors[:80]:         msgs.append(f"{list(e.path)}: {e.message}")     return msgs  # ------------------------- # HTTP call to calculator # ------------------------- def post_json(url: str, payload: Dict[str, Any], timeout: int = 60) -> Dict[str, Any]:     data = json.dumps(payload).encode("utf-8")     req = urllib.request.Request(         url=url,         data=data,         headers={"Content-Type": "application/json"},         method="POST",     )     try:         with urllib.request.urlopen(req, timeout=timeout) as resp:             body = resp.read().decode("utf-8")             return json.loads(body)     except urllib.error.HTTPError as e:         body = e.read().decode("utf-8", errors="replace")         raise RuntimeError(f"HTTPError {e.code} calling {url}:\n{body}") from e     except urllib.error.URLError as e:         raise RuntimeError(f"URLError calling {url}: {e}") from e  # ------------------------- # Canonical comparison (readable diffs) # ------------------------- @dataclass class Drift:     file: str     issues: List[str]  def _index_planets(canon: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:     return {p["body"]: p for p in canon["western_chart"]["bodies"]}  def _index_aspects(canon: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:     # Key aspects stably: bodyA-bodyB-aspect (sorted bodies)     idx = {}     for a in canon.get("aspects", []):         b1, b2 = a["body_a"], a["body_b"]         key = "|".join(sorted([b1, b2]) + [a["aspect"]])         idx[key] = a     return idx  def compare_canonical(expected: Dict[str, Any], actual: Dict[str, Any],                       lon_tol_deg: float = 0.0003,                       orb_tol_deg: float = 0.01) -> List[str]:     issues: List[str] = []      # Basic guardrails     if expected.get("schema_version") != actual.get("schema_version"):         issues.append(f"schema_version changed: {expected.get('schema_version')} -> {actual.get('schema_version')}")      # Provenance sanity (not strict equality; drift here is normal)     for k in ["calculator_version", "build_hash", "config_hash"]:         if k not in actual.get("calculator", {}):             issues.append(f"missing calculator.{k} in actual output")      # Planets: lon/sign/house/retrograde     eplan = _index_planets(expected)     aplan = _index_planets(actual)      if set(eplan.keys()) != set(aplan.keys()):         issues.append(f"planet set changed: expected={sorted(eplan.keys())} actual={sorted(aplan.keys())}")         return issues  # no point continuing      for body in sorted(eplan.keys()):         ep, ap = eplan[body], aplan[body]          # longitude drift (wrap-safe)         def angdiff(x: float, y: float) -> float:             d = abs(x - y) % 360.0             return min(d, 360.0 - d)          dlon = angdiff(float(ep["lon"]), float(ap["lon"]))         if dlon > lon_tol_deg:             issues.append(f"{body}.lon drift {dlon:.6f}° (tol {lon_tol_deg}) exp={ep['lon']:.6f} act={ap['lon']:.6f}")          for field in ["sign", "house", "retrograde"]:             if ep.get(field) != ap.get(field):                 issues.append(f"{body}.{field} changed exp={ep.get(field)} act={ap.get(field)}")      # Angles drift (Asc/MC)     for angle in ["asc_lon", "mc_lon"]:         if "angles" in expected.get("western_chart", {}) and "angles" in actual.get("western_chart", {}):             ea = expected["western_chart"]["angles"].get(angle)             aa = actual["western_chart"]["angles"].get(angle)             if ea is not None and aa is not None:                 d = abs((ea - aa) % 360.0)                 d = min(d, 360.0 - d)                 if d > lon_tol_deg:                     issues.append(f"angles.{angle} drift {d:.6f}° (tol {lon_tol_deg}) exp={ea:.6f} act={aa:.6f}")      # Aspects set + orb drift     easp = _index_aspects(expected)     aasp = _index_aspects(actual)      if set(easp.keys()) != set(aasp.keys()):         missing = sorted(set(easp.keys()) - set(aasp.keys()))         extra = sorted(set(aasp.keys()) - set(easp.keys()))         if missing:             issues.append(f"aspects missing ({len(missing)}): {missing[:10]}{'...' if len(missing) > 10 else ''}")         if extra:             issues.append(f"aspects extra ({len(extra)}): {extra[:10]}{'...' if len(extra) > 10 else ''}")      # For shared aspects, check orb within tolerance     for key in sorted(set(easp.keys()) & set(aasp.keys())):         eo, ao = easp[key].get("orb"), aasp[key].get("orb")         if eo is not None and ao is not None:             if abs(float(eo) - float(ao)) > orb_tol_deg:                 issues.append(f"aspect orb drift {key}: exp={eo:.4f} act={ao:.4f} (tol {orb_tol_deg})")      # Derived fields that must remain stable     if expected.get("derived", {}).get("sect") != actual.get("derived", {}).get("sect"):         issues.append(f"derived.sect changed exp={expected.get('derived', {}).get('sect')} act={actual.get('derived', {}).get('sect')}")      return issues  # ------------------------- # Main golden workflow # ------------------------- def run(calc_url: str, update_expected: bool, fail_on_missing_expected: bool) -> int:     GOLDENS_ACTUAL.mkdir(parents=True, exist_ok=True)     GOLDENS_EXPECTED.mkdir(parents=True, exist_ok=True)      input_files = sorted(GOLDENS_INPUTS.glob("*.input.json"))     if not input_files:         print(f"No inputs found in {GOLDENS_INPUTS}")         return 2      drifts: List[Drift] = []     errors: List[str] = []      # Validate all inputs first     for f in input_files:         inst = load_json(f)         msgs = validate_schema(inst, INPUT_SCHEMA, SCHEMAS_DIR)         if msgs:             errors.append(f"[INPUT SCHEMA FAIL] {f.name}\n  " + "\n  ".join(msgs))      if errors:         print("\n".join(errors))         return 2      # Run calculator on each input     for f in input_files:         payload = load_json(f)          # Optional: embed a stable config_hash if your calculator doesn't compute it         # (better: calculator computes config_hash itself deterministically)         # payload["meta"] = payload.get("meta", {})         # payload["meta"]["_client_config_hash"] = sha256_text(json.dumps(payload["config"], sort_keys=True))          try:             out = post_json(calc_url, payload, timeout=90)         except Exception as e:             print(f"[CALC FAIL] {f.name}: {e}")             return 3          actual_path = GOLDENS_ACTUAL / f.name.replace(".input.json", ".canonical.json")         write_json(actual_path, out)          # Validate output schema         out_msgs = validate_schema(out, CANON_SCHEMA, SCHEMAS_DIR)         if out_msgs:             print(f"[OUTPUT SCHEMA FAIL] {f.name}\n  " + "\n  ".join(out_msgs))             return 4          expected_path = GOLDENS_EXPECTED / actual_path.name          # Bootstrap/update expected         if update_expected:             write_json(expected_path, out)             print(f"[UPDATED EXPECTED] {expected_path.name}")             continue          if not expected_path.exists():             msg = f"[MISSING EXPECTED] {expected_path.name}"             if fail_on_missing_expected:                 print(msg)                 return 5             else:                 print(msg + " (skipping drift compare)")                 continue          expected = load_json(expected_path)         issues = compare_canonical(expected, out)         if issues:             drifts.append(Drift(file=expected_path.name, issues=issues))      if drifts:         print("\n=== GOLDEN DRIFT REPORT ===")         for d in drifts:             print(f"\n{d.file}")             for line in d.issues[:60]:                 print(f"  - {line}")             if len(d.issues) > 60:                 print(f"  ... ({len(d.issues) - 60} more)")         print("\nResult: FAIL (drift detected)")         return 6      print("Result: PASS (no drift)")     return 0  def main() -> None:     ap = argparse.ArgumentParser(description="Run Aethos golden regression suite.")     ap.add_argument("--calc-url", default=DEFAULT_CALC_URL, help="Calculator POST endpoint URL")     ap.add_argument("--update-expected", action="store_true", help="Overwrite goldens/outputs with current outputs")     ap.add_argument("--allow-missing-expected", action="store_true", help="Do not fail if expected is missing")     args = ap.parse_args()      code = run(         calc_url=args.calc_url,         update_expected=args.update_expected,         fail_on_missing_expected=not args.allow_missing_expected     )     sys.exit(code)  if __name__ == "__main__":     main() `  
+## 1.2 `tools/goldens/README.md` (short operator guide)
+ `# Aethos Golden Suite  ## Run (compare vs expected) AETHOS_CALC_URL=http://localhost:8080/calc/canonical \ python tools/goldens/run_goldens.py  ## Bootstrap/update expected baselines AETHOS_CALC_URL=http://localhost:8080/calc/canonical \ python tools/goldens/run_goldens.py --update-expected  ## Allow missing expected (non-blocking) python tools/goldens/run_goldens.py --allow-missing-expected `  
+# 2) Requirements
+ 
+Add to `requirements.txt` (or your tool requirements):
+ `jsonschema==4.23.0 pytest==8.3.2 `  
+# 3) Makefile (optional convenience)
+ 
+## `Makefile`
+ `goldens: 	python tools/goldens/run_goldens.py  goldens-update: 	python tools/goldens/run_goldens.py --update-expected ` 
+Then you can run:
+ `make goldens make goldens-update `  
+# 4) GitHub Actions CI snippet (drop-in)
+ 
+## `.github/workflows/goldens.yml`
+ `name: Goldens  on:   pull_request:   push:     branches: [ main ]  jobs:   goldens:     runs-on: ubuntu-latest     steps:       - uses: actions/checkout@v4        - name: Set up Python         uses: actions/setup-python@v5         with:           python-version: "3.11"        - name: Install deps         run: |           python -m pip install --upgrade pip           pip install -r requirements.txt        # Start your calculator service here if it’s part of the repo:       # - name: Start calculator       #   run: |       #     docker compose up -d calculator       #     sleep 2        - name: Run goldens         env:           AETHOS_CALC_URL: http://localhost:8080/calc/canonical         run: |           python tools/goldens/run_goldens.py ` 
+*(If your calculator runs via docker compose, wire it in; if it’s a library call instead of HTTP, tell me and I’ll swap the runner to import-and-execute locally.)*
+  
+# 5) Critical DST policy hook (so drift is explainable)
+ 
+Your calculator should record (in `calculator` provenance or a new `birth_record.meta`) something like:
+ 
+ 
+- `tz_invalid_time_policy`: `"error"` or `"normalize_forward"`
+ 
+- `tz_ambiguous_time_policy`: `"prefer_earliest"` or `"prefer_latest"`
+ 
+
+ 
+Right now the runner will faithfully detect drift, but you want the *why* embedded in the output so the diff report is interpretable.
+  
+## If you want the “complete kit” in one shot
+ 
+Next I can generate a **minimal FastAPI calculator stub** that accepts the request schema, returns canonical schema-shaped output (even if placeholders), and allows you to run the entire CI loop today while the real ephemeris engine is still being built.
+
+Awesome—here’s a minimal, production-structured FastAPI “calculator stub” that:
+
+Accepts your aethos.calc_request.v1.json request shape
+
+Returns a canonical output that matches your aethos.canonical.v1.json schema structure (even though the astrology math is placeholder)
+
+Is deterministic (same input → same output)
+
+Implements explicit DST ambiguity/invalid-time policy fields (so drift is explainable later)
+
+Runs locally in seconds, perfect for wiring your golden runner + CI today
+
+
+> This is intentionally a stub: it enforces structure, provenance discipline, and workflow correctness now, while you implement the real ephemeris engine behind the same contract.
+
+
+
+
+---
+
+1) File layout
+
+Create:
+
+services/
+  calculator/
+    app/
+      __init__.py
+      main.py
+      models.py
+      utils.py
+    requirements.txt
+    Dockerfile
+
+
+---
+
+2) services/calculator/app/models.py
+
+from __future__ import annotations
+
+from typing import Any, Dict, List, Optional, Literal
+from pydantic import BaseModel, Field, ConfigDict
+
+
+# ----------------------------
+# Request model (calc_request)
+# ----------------------------
+
+class Geo(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    lat: float
+    lon: float
+    place_label: str
+
+
+class BirthIn(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    birth_source: Optional[Literal["certificate", "family_memory", "approx"]] = None
+    time_accuracy_minutes: Optional[int] = Field(default=None, ge=0, le=1440)
+
+    birth_local_date: str
+    birth_local_time: Optional[str] = None  # can be null/None when unknown
+    birth_timezone: str
+    geo: Geo
+
+
+class OrbPolicyMajor(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    conjunction: float
+    opposition: float
+    trine: float
+    square: float
+    sextile: float
+
+
+class OrbPolicy(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    name: str
+    major_aspects: OrbPolicyMajor
+
+
+class PointsEnabled(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    lunar_nodes: Optional[bool] = None
+    chiron: Optional[bool] = None
+    asteroids: Optional[List[str]] = None
+
+
+class ConfigIn(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    zodiac_system: Literal["tropical", "sidereal"]
+    ayanamsa: Optional[Literal["lahiri", "raman", "fagan_bradley"]] = None
+    house_system: Literal["whole_sign", "placidus", "koch", "regiomontanus"]
+    orb_policy: OrbPolicy
+    points_enabled: PointsEnabled
+    include_velocity: Optional[bool] = True
+
+
+class CalcRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    schema_version: Literal["1.0.0"]
+    subject_id: str
+    birth: BirthIn
+    config: ConfigIn
+    meta: Optional[Dict[str, Any]] = None
+
+
+# ----------------------------
+# Canonical output models
+# ----------------------------
+
+Body = Literal[
+    "Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn",
+    "Uranus","Neptune","Pluto","NorthNode","SouthNode","Chiron"
+]
+
+Sign = Literal[
+    "Aries","Taurus","Gemini","Cancer","Leo","Virgo",
+    "Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"
+]
+
+HouseSystem = Literal["whole_sign","placidus","koch","regiomontanus"]
+Zodiac = Literal["tropical","sidereal"]
+
+
+class EphemerisMeta(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    provider: Literal["swisseph"]
+    swe_version: str
+    fileset: str
+
+
+class CalculatorProvenance(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    calculator_version: str
+    build_hash: str
+    generated_at_utc: str
+    config_hash: str
+    ephemeris: EphemerisMeta
+
+
+class GeoOut(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    lat: float
+    lon: float
+    place_label: Optional[str] = None
+
+
+class BirthRecord(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    subject_id: str
+
+    birth_source: Optional[Literal["certificate","family_memory","approx"]] = None
+    time_accuracy_minutes: Optional[int] = None
+
+    birth_local_date: str
+    birth_local_time: str
+    birth_timezone: str
+
+    birth_utc_datetime: str
+    julian_day: float
+    delta_t_seconds: float
+
+    geo: GeoOut
+
+    # Explicit TZ policy disclosures
+    tz_invalid_time_policy: Literal["error", "normalize_forward"]
+    tz_ambiguous_time_policy: Literal["prefer_earliest", "prefer_latest"]
+    tz_resolution: Literal["ok", "ambiguous", "invalid", "time_unknown"]
+
+
+class PlanetState(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    body: Body
+    lon: float
+    lat: float
+    distance_au: float
+
+    speed_lon: float
+    speed_lat: float
+    speed_dist: float
+
+    retrograde: bool
+    sign: Sign
+    house: int
+    meta: Optional[Dict[str, Any]] = None
+
+
+class HouseState(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    house: int
+    sign: Sign
+    start_lon: float
+    end_lon: float
+    cusp_lon: Optional[float] = None
+
+
+class Angles(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    asc_lon: float
+    mc_lon: float
+    desc_lon: Optional[float] = None
+    ic_lon: Optional[float] = None
+
+
+class WesternChart(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    zodiac: Zodiac
+    ayanamsa: Optional[Literal["lahiri","raman","fagan_bradley"]] = None
+    house_system: HouseSystem
+    angles: Angles
+    bodies: List[PlanetState]
+    houses: List[HouseState]
+
+
+class AspectEdge(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    body_a: Body
+    body_b: Body
+    aspect: Literal["conjunction","opposition","trine","square","sextile","quincunx"]
+    exact_angle: float
+    separation: float
+    orb: float
+    applying: bool
+    strength: float
+
+
+class DignityState(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    body: Body
+    sign: Sign
+    status: Literal["domicile","exaltation","detriment","fall","peregrine"]
+
+
+class AngularityState(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    body: Body
+    class_: Literal["angular","succedent","cadent"] = Field(alias="class")
+
+
+class DerivedBundle(BaseModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+    sect: Literal["diurnal","nocturnal"]
+    dignities: List[DignityState]
+    angularity: List[AngularityState]
+    rulerships: Optional[List[Dict[str, Any]]] = None
+
+
+class Reliability(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    time_uncertainty_minutes: Optional[int] = None
+    flags: Optional[List[Literal[
+        "HOUSES_UNRELIABLE",
+        "ANGLES_UNRELIABLE",
+        "MOON_SIGN_EDGE_CASE",
+        "ASPECTS_PARTIALLY_UNRELIABLE",
+        "EVENT_WINDOWS_UNRELIABLE"
+    ]]] = None
+
+
+class CanonicalOutput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    schema_version: Literal["1.0.0"]
+    calculator: CalculatorProvenance
+    birth_record: BirthRecord
+    config: Dict[str, Any]  # mirror input config exactly for now
+    western_chart: WesternChart
+    aspects: List[AspectEdge]
+    derived: DerivedBundle
+    reliability: Optional[Reliability] = None
+
+
+---
+
+3) services/calculator/app/utils.py
+
+This provides deterministic placeholder “positions,” plus a strict timezone policy encoding.
+
+from __future__ import annotations
+
+import hashlib
+import json
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Tuple
+
+SIGNS = [
+    "Aries","Taurus","Gemini","Cancer","Leo","Virgo",
+    "Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"
+]
+
+BODIES = [
+    "Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn",
+    "Uranus","Neptune","Pluto","NorthNode","SouthNode","Chiron"
+]
+
+ASPECTS = [
+    ("conjunction", 0.0),
+    ("sextile", 60.0),
+    ("square", 90.0),
+    ("trine", 120.0),
+    ("opposition", 180.0),
+    ("quincunx", 150.0)
+]
+
+def stable_hash(obj: Any) -> str:
+    s = json.dumps(obj, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(s.encode("utf-8")).hexdigest()
+
+def utc_now_rfc3339() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+def clamp360(x: float) -> float:
+    x = x % 360.0
+    return x if x >= 0 else x + 360.0
+
+def sign_from_lon(lon: float) -> str:
+    idx = int(clamp360(lon) // 30.0)
+    return SIGNS[idx]
+
+def house_from_lon_whole_sign(asc_lon: float, lon: float) -> int:
+    asc_sign = int(clamp360(asc_lon) // 30.0)
+    body_sign = int(clamp360(lon) // 30.0)
+    # Whole sign houses: Asc sign = House 1
+    delta = (body_sign - asc_sign) % 12
+    return delta + 1
+
+def placeholder_angles(seed: int) -> Tuple[float, float]:
+    # Deterministic "Asc" and "MC" from seed
+    asc = clamp360((seed % 360000) / 1000.0)
+    mc = clamp360(asc + 90.0)
+    return asc, mc
+
+def placeholder_body_lon(seed: int, idx: int) -> float:
+    # Spread bodies around the wheel deterministically
+    base = (seed % 360000) / 1000.0
+    return clamp360(base + idx * 23.173)
+
+def placeholder_speed(idx: int) -> float:
+    # Deterministic pseudo-speed
+    return 0.1 + (idx % 7) * 0.03
+
+def build_houses(asc_lon: float, house_system: str) -> List[Dict[str, Any]]:
+    houses = []
+    # For stub: implement whole-sign faithfully; quadrant systems get placeholders
+    if house_system == "whole_sign":
+        asc_sign_idx = int(clamp360(asc_lon) // 30.0)
+        for h in range(1, 13):
+            sign_idx = (asc_sign_idx + (h - 1)) % 12
+            start = sign_idx * 30.0
+            end = clamp360(start + 30.0)
+            houses.append({
+                "house": h,
+                "sign": SIGNS[sign_idx],
+                "start_lon": start,
+                "end_lon": end,
+                "cusp_lon": start
+            })
+    else:
+        # Placeholder cusps: evenly spaced
+        for h in range(1, 13):
+            cusp = clamp360(asc_lon + (h - 1) * 30.0)
+            start = cusp
+            end = clamp360(cusp + 30.0)
+            houses.append({
+                "house": h,
+                "sign": sign_from_lon(cusp),
+                "start_lon": start,
+                "end_lon": end,
+                "cusp_lon": cusp
+            })
+    return houses
+
+def compute_aspects(bodies: List[Dict[str, Any]], orb_policy: Dict[str, Any]) -> List[Dict[str, Any]]:
+    # Stub aspect detection: compute separations and include major aspects within configured orbs
+    # Deterministic: order by body indices.
+    orb_map = orb_policy["major_aspects"]
+    def orb_for(aspect: str) -> float:
+        if aspect in orb_map:
+            return float(orb_map[aspect])
+        # quincunx default tight
+        return 3.0
+
+    out = []
+    for i in range(len(bodies)):
+        for j in range(i+1, len(bodies)):
+            a = bodies[i]
+            b = bodies[j]
+            lon_a = float(a["lon"])
+            lon_b = float(b["lon"])
+            sep = abs(lon_a - lon_b) % 360.0
+            sep = min(sep, 360.0 - sep)
+            for name, exact in ASPECTS:
+                orb = abs(sep - exact)
+                if orb <= orb_for(name):
+                    strength = max(0.0, 1.0 - (orb / max(orb_for(name), 0.0001)))
+                    out.append({
+                        "body_a": a["body"],
+                        "body_b": b["body"],
+                        "aspect": name,
+                        "exact_angle": exact,
+                        "separation": sep,
+                        "orb": orb,
+                        "applying": False,  # stub
+                        "strength": round(strength, 6)
+                    })
+    return out
+
+def derived_sect(sun_lon: float, asc_lon: float) -> str:
+    # Stub sect: if Sun above horizon approximated by (Sun within houses 7-12) in whole sign
+    # In real engine, use altitude; here deterministic & stable.
+    sun_house = house_from_lon_whole_sign(asc_lon, sun_lon)
+    return "diurnal" if sun_house >= 7 else "nocturnal"
+
+def dignities_stub(bodies: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    # Stub: mark all peregrine (real engine will compute)
+    out = []
+    for b in bodies:
+        out.append({"body": b["body"], "sign": b["sign"], "status": "peregrine"})
+    return out
+
+def angularity_stub(bodies: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    # Stub: angular if house in [1,4,7,10], succedent if [2,5,8,11], cadent otherwise
+    out = []
+    for b in bodies:
+        h = int(b["house"])
+        if h in (1,4,7,10):
+            cls = "angular"
+        elif h in (2,5,8,11):
+            cls = "succedent"
+        else:
+            cls = "cadent"
+        out.append({"body": b["body"], "class": cls})
+    return out
+
+
+---
+
+4) services/calculator/app/main.py
+
+from __future__ import annotations
+
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
+from .models import CalcRequest, CanonicalOutput
+from .utils import (
+    BODIES,
+    stable_hash,
+    utc_now_rfc3339,
+    placeholder_angles,
+    placeholder_body_lon,
+    placeholder_speed,
+    sign_from_lon,
+    house_from_lon_whole_sign,
+    build_houses,
+    compute_aspects,
+    derived_sect,
+    dignities_stub,
+    angularity_stub,
+)
+
+APP_VERSION = "0.1.0"
+BUILD_HASH = "stub-dev"
+
+app = FastAPI(title="Aethos Calculator (Stub)", version=APP_VERSION)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/health")
+def health():
+    return {"ok": True, "service": "calculator", "version": APP_VERSION}
+
+@app.post("/calc/canonical", response_model=CanonicalOutput)
+def calc_canonical(req: CalcRequest):
+    # ---- Policy defaults (make explicit)
+    tz_invalid_time_policy = "normalize_forward"
+    tz_ambiguous_time_policy = "prefer_earliest"
+
+    # ---- Handle unknown time
+    if req.birth.birth_local_time is None:
+        # Choose a deterministic placeholder time for calculations (noon local),
+        # but mark reliability and tz_resolution accordingly.
+        birth_local_time = "12:00:00"
+        tz_resolution = "time_unknown"
+        reliability_flags = ["HOUSES_UNRELIABLE", "ANGLES_UNRELIABLE", "EVENT_WINDOWS_UNRELIABLE"]
+        time_uncertainty = req.birth.time_accuracy_minutes or 1440
+    else:
+        birth_local_time = req.birth.birth_local_time
+        tz_resolution = "ok"
+        reliability_flags = []
+        time_uncertainty = req.birth.time_accuracy_minutes or 0
+
+    # ---- Deterministic seed from input
+    seed_material = {
+        "subject_id": req.subject_id,
+        "birth_local_date": req.birth.birth_local_date,
+        "birth_local_time": birth_local_time,
+        "birth_timezone": req.birth.birth_timezone,
+        "geo": {"lat": req.birth.geo.lat, "lon": req.birth.geo.lon},
+        "config": req.config.model_dump()
+    }
+    seed_hex = stable_hash(seed_material)
+    seed_int = int(seed_hex[:12], 16)
+
+    # ---- Placeholder UTC datetime + JD (real engine will compute)
+    generated_at = utc_now_rfc3339()
+
+    # Stub UTC moment: just deterministic ISO string (NOT a real conversion)
+    # This keeps contracts stable for now; replace with real tz conversion later.
+    birth_utc = f"{req.birth.birth_local_date}T{birth_local_time}Z"
+
+    # Stub Julian Day: deterministic float
+    julian_day = 2400000.5 + (seed_int % 200000) / 10.0
+    delta_t = 69.0  # placeholder constant
+
+    # ---- Angles + houses
+    asc_lon, mc_lon = placeholder_angles(seed_int)
+    houses = build_houses(asc_lon, req.config.house_system)
+
+    # ---- Bodies
+    bodies = []
+    for idx, body in enumerate(BODIES):
+        lon = placeholder_body_lon(seed_int, idx)
+        sign = sign_from_lon(lon)
+
+        if req.config.house_system == "whole_sign":
+            house = house_from_lon_whole_sign(asc_lon, lon)
+        else:
+            # Placeholder: derive house by cusp segmentation
+            house = int(( (lon - asc_lon) % 360.0 ) // 30.0) + 1
+
+        sp = placeholder_speed(idx)
+        bodies.append({
+            "body": body,
+            "lon": float(lon),
+            "lat": 0.0,
+            "distance_au": 1.0,
+            "speed_lon": sp,
+            "speed_lat": 0.0,
+            "speed_dist": 0.0,
+            "retrograde": False,
+            "sign": sign,
+            "house": int(house),
+            "meta": {}
+        })
+
+    # ---- Aspects (major)
+    aspects = compute_aspects(bodies, req.config.orb_policy.model_dump())
+
+    # ---- Derived
+    sun_lon = next(p["lon"] for p in bodies if p["body"] == "Sun")
+    sect = derived_sect(sun_lon, asc_lon)
+
+    derived = {
+        "sect": sect,
+        "dignities": dignities_stub(bodies),
+        "angularity": angularity_stub(bodies)
+    }
+
+    config_hash = stable_hash(req.config.model_dump())
+
+    out = {
+        "schema_version": "1.0.0",
+        "calculator": {
+            "calculator_version": APP_VERSION,
+            "build_hash": BUILD_HASH,
+            "generated_at_utc": generated_at,
+            "config_hash": config_hash,
+            "ephemeris": {
+                "provider": "swisseph",
+                "swe_version": "STUB",
+                "fileset": "STUB"
+            }
+        },
+        "birth_record": {
+            "subject_id": req.subject_id,
+            "birth_source": req.birth.birth_source,
+            "time_accuracy_minutes": req.birth.time_accuracy_minutes,
+            "birth_local_date": req.birth.birth_local_date,
+            "birth_local_time": birth_local_time,
+            "birth_timezone": req.birth.birth_timezone,
+            "birth_utc_datetime": birth_utc,
+            "julian_day": float(julian_day),
+            "delta_t_seconds": float(delta_t),
+            "geo": {
+                "lat": float(req.birth.geo.lat),
+                "lon": float(req.birth.geo.lon),
+                "place_label": req.birth.geo.place_label
+            },
+            "tz_invalid_time_policy": tz_invalid_time_policy,
+            "tz_ambiguous_time_policy": tz_ambiguous_time_policy,
+            "tz_resolution": tz_resolution
+        },
+        "config": req.config.model_dump(),
+        "western_chart": {
+            "zodiac": req.config.zodiac_system,
+            "ayanamsa": req.config.ayanamsa,
+            "house_system": req.config.house_system,
+            "angles": {
+                "asc_lon": float(asc_lon),
+                "mc_lon": float(mc_lon),
+                "desc_lon": float((asc_lon + 180.0) % 360.0),
+                "ic_lon": float((mc_lon + 180.0) % 360.0)
+            },
+            "bodies": bodies,
+            "houses": houses
+        },
+        "aspects": aspects,
+        "derived": derived,
+        "reliability": {
+            "time_uncertainty_minutes": int(time_uncertainty),
+            "flags": reliability_flags if reliability_flags else None
+        } if (time_uncertainty > 0 or reliability_flags) else None
+    }
+
+    # Pydantic response_model validation (ensures shape stays honest)
+    try:
+        return CanonicalOutput.model_validate(out)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Canonical output failed model validation: {e}")
+
+
+---
+
+5) services/calculator/app/__init__.py
+
+# package marker
+
+
+---
+
+6) services/calculator/requirements.txt
+
+fastapi==0.112.2
+uvicorn[standard]==0.30.6
+pydantic==2.8.2
+
+
+---
+
+7) services/calculator/Dockerfile
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY services/calculator/requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+COPY services/calculator/app /app/app
+
+EXPOSE 8080
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+
+
+---
+
+8) Run it locally
+
+From repo root:
+
+pip install -r services/calculator/requirements.txt
+uvicorn services.calculator.app.main:app --host 0.0.0.0 --port 8080
+
+Test:
+
+curl -s http://localhost:8080/health
+
+Then run goldens:
+
+export AETHOS_CALC_URL=http://localhost:8080/calc/canonical
+python tools/goldens/run_goldens.py --update-expected   # first time bootstrap
+python tools/goldens/run_goldens.py                     # after that: drift checking
+
+
+---
+
+One important note (so you don’t get surprised later)
+
+This stub does not perform real timezone conversion. It outputs birth_utc_datetime as local_date + local_time + "Z" purely to keep the canonical shape stable. 
+
+Perfect. Here’s the **library-mode calculator** (no HTTP) with a clean separation:
+ 
+ 
+- `services/calculator/app/core.py` exposes `calculate_canonical(req_dict) -> dict`
+ 
+- FastAPI endpoint becomes a thin wrapper that calls the core function
+ 
+- Golden runner gains a `--mode lib` switch (or env) to run **in-process** (faster, no service startup)
+ 
+
+ 
+This is the setup you want for CI stability.
+  
+# 1) Add `services/calculator/app/core.py`
+ `from __future__ import annotations  from typing import Any, Dict, Optional  from .utils import (     BODIES,     stable_hash,     utc_now_rfc3339,     placeholder_angles,     placeholder_body_lon,     placeholder_speed,     sign_from_lon,     house_from_lon_whole_sign,     build_houses,     compute_aspects,     derived_sect,     dignities_stub,     angularity_stub, )  APP_VERSION = "0.1.0" BUILD_HASH = "stub-dev"   def calculate_canonical(req: Dict[str, Any]) -> Dict[str, Any]:     """     Library-mode canonical calculator.     Contract: req matches aethos.calc_request.v1.json (shape enforced upstream).     Returns: dict matching aethos.canonical.v1.json (shape enforced downstream).     """     # ---- Policy defaults (explicit, stable)     tz_invalid_time_policy = "normalize_forward"     tz_ambiguous_time_policy = "prefer_earliest"      birth = req["birth"]     config = req["config"]      # ---- Unknown time handling     if birth.get("birth_local_time") is None:         birth_local_time = "12:00:00"  # deterministic placeholder         tz_resolution = "time_unknown"         reliability_flags = ["HOUSES_UNRELIABLE", "ANGLES_UNRELIABLE", "EVENT_WINDOWS_UNRELIABLE"]         time_uncertainty = int(birth.get("time_accuracy_minutes") or 1440)     else:         birth_local_time = birth["birth_local_time"]         tz_resolution = "ok"         reliability_flags = []         time_uncertainty = int(birth.get("time_accuracy_minutes") or 0)      # ---- Deterministic seed from full input     seed_material = {         "subject_id": req["subject_id"],         "birth_local_date": birth["birth_local_date"],         "birth_local_time": birth_local_time,         "birth_timezone": birth["birth_timezone"],         "geo": {"lat": birth["geo"]["lat"], "lon": birth["geo"]["lon"]},         "config": config     }     seed_hex = stable_hash(seed_material)     seed_int = int(seed_hex[:12], 16)      generated_at = utc_now_rfc3339()      # ---- Stub UTC datetime + JD (replace later with real tz conversion + JD)     birth_utc = f"{birth['birth_local_date']}T{birth_local_time}Z"     julian_day = 2400000.5 + (seed_int % 200000) / 10.0     delta_t = 69.0      # ---- Angles + houses     asc_lon, mc_lon = placeholder_angles(seed_int)     houses = build_houses(asc_lon, config["house_system"])      # ---- Bodies     bodies = []     for idx, body_name in enumerate(BODIES):         lon = float(placeholder_body_lon(seed_int, idx))         sign = sign_from_lon(lon)          if config["house_system"] == "whole_sign":             house = house_from_lon_whole_sign(asc_lon, lon)         else:             # Placeholder: segment by 30° from ASC             house = int(((lon - asc_lon) % 360.0) // 30.0) + 1          sp = float(placeholder_speed(idx))         bodies.append({             "body": body_name,             "lon": lon,             "lat": 0.0,             "distance_au": 1.0,             "speed_lon": sp,             "speed_lat": 0.0,             "speed_dist": 0.0,             "retrograde": False,             "sign": sign,             "house": int(house),             "meta": {}         })      # ---- Aspects     aspects = compute_aspects(bodies, config["orb_policy"])      # ---- Derived     sun_lon = next(p["lon"] for p in bodies if p["body"] == "Sun")     sect = derived_sect(sun_lon, asc_lon)      derived = {         "sect": sect,         "dignities": dignities_stub(bodies),         "angularity": angularity_stub(bodies)     }      config_hash = stable_hash(config)      out: Dict[str, Any] = {         "schema_version": "1.0.0",         "calculator": {             "calculator_version": APP_VERSION,             "build_hash": BUILD_HASH,             "generated_at_utc": generated_at,             "config_hash": config_hash,             "ephemeris": {                 "provider": "swisseph",                 "swe_version": "STUB",                 "fileset": "STUB"             }         },         "birth_record": {             "subject_id": req["subject_id"],             "birth_source": birth.get("birth_source"),             "time_accuracy_minutes": birth.get("time_accuracy_minutes"),             "birth_local_date": birth["birth_local_date"],             "birth_local_time": birth_local_time,             "birth_timezone": birth["birth_timezone"],             "birth_utc_datetime": birth_utc,             "julian_day": float(julian_day),             "delta_t_seconds": float(delta_t),             "geo": {                 "lat": float(birth["geo"]["lat"]),                 "lon": float(birth["geo"]["lon"]),                 "place_label": birth["geo"].get("place_label")             },             "tz_invalid_time_policy": tz_invalid_time_policy,             "tz_ambiguous_time_policy": tz_ambiguous_time_policy,             "tz_resolution": tz_resolution         },         "config": config,         "western_chart": {             "zodiac": config["zodiac_system"],             "ayanamsa": config.get("ayanamsa"),             "house_system": config["house_system"],             "angles": {                 "asc_lon": float(asc_lon),                 "mc_lon": float(mc_lon),                 "desc_lon": float((asc_lon + 180.0) % 360.0),                 "ic_lon": float((mc_lon + 180.0) % 360.0)             },             "bodies": bodies,             "houses": houses         },         "aspects": aspects,         "derived": derived,     }      if time_uncertainty > 0 or reliability_flags:         out["reliability"] = {             "time_uncertainty_minutes": int(time_uncertainty),             "flags": reliability_flags if reliability_flags else None         }      return out `  
+# 2) Refactor FastAPI to call the core function
+ 
+Update `services/calculator/app/main.py` to:
+ `from __future__ import annotations  from fastapi import FastAPI, HTTPException from fastapi.middleware.cors import CORSMiddleware  from .models import CalcRequest, CanonicalOutput from .core import calculate_canonical  app = FastAPI(title="Aethos Calculator (Stub)", version="0.1.0")  app.add_middleware(     CORSMiddleware,     allow_origins=["*"],     allow_credentials=False,     allow_methods=["*"],     allow_headers=["*"], )  @app.get("/health") def health():     return {"ok": True, "service": "calculator", "version": "0.1.0"}  @app.post("/calc/canonical", response_model=CanonicalOutput) def calc_canonical(req: CalcRequest):     try:         out = calculate_canonical(req.model_dump())         return CanonicalOutput.model_validate(out)     except Exception as e:         raise HTTPException(status_code=500, detail=f"calc failed: {e}") `  
+# 3) Upgrade the golden runner to support `lib` mode
+ 
+Edit your `tools/goldens/run_goldens.py` like this:
+ 
+### 3.1 Add a mode flag + an import path option
+ 
+At the top (near defaults):
+ `DEFAULT_MODE = os.environ.get("AETHOS_CALC_MODE", "http")  # "http" or "lib" DEFAULT_LIB_IMPORT = os.environ.get("AETHOS_CALC_LIB", "services.calculator.app.core:calculate_canonical") ` 
+### 3.2 Add dynamic import helper
+ 
+Add this function:
+ `import importlib  def import_callable(spec: str):     """     spec like: 'services.calculator.app.core:calculate_canonical'     """     if ":" not in spec:         raise ValueError("Import spec must be module:function, e.g. pkg.mod:fn")     mod_name, fn_name = spec.split(":", 1)     mod = importlib.import_module(mod_name)     fn = getattr(mod, fn_name, None)     if fn is None or not callable(fn):         raise ValueError(f"Callable not found: {spec}")     return fn ` 
+### 3.3 Modify CLI args
+ 
+In `main()`:
+ `ap.add_argument("--mode", default=DEFAULT_MODE, choices=["http", "lib"], help="Execution mode") ap.add_argument("--calc-url", default=DEFAULT_CALC_URL, help="HTTP calculator endpoint (mode=http)") ap.add_argument("--calc-lib", default=DEFAULT_LIB_IMPORT, help="Import path (mode=lib), e.g. pkg.mod:fn") ` 
+### 3.4 Modify `run()` signature and compute call
+ 
+Change:
+ `def run(calc_url: str, update_expected: bool, fail_on_missing_expected: bool) -> int: ` 
+to:
+ `def run(mode: str, calc_url: str, calc_lib: str, update_expected: bool, fail_on_missing_expected: bool) -> int: ` 
+Then inside `run()` before looping inputs:
+ `calc_fn = None if mode == "lib":     calc_fn = import_callable(calc_lib) ` 
+Then replace the HTTP call block:
+ `try:     out = post_json(calc_url, payload, timeout=90) except Exception as e:     ... ` 
+with:
+ `try:     if mode == "http":         out = post_json(calc_url, payload, timeout=90)     else:         out = calc_fn(payload)  # type: ignore[misc] except Exception as e:     print(f"[CALC FAIL] {f.name}: {e}")     return 3 ` 
+Finally in `main()` call `run(...)` with args.
+  
+# 4) How to run library mode
+ 
+From repo root:
+ `export AETHOS_CALC_MODE=lib export AETHOS_CALC_LIB=services.calculator.app.core:calculate_canonical python tools/goldens/run_goldens.py --update-expected python tools/goldens/run_goldens.py ` 
+Or explicitly:
+ `python tools/goldens/run_goldens.py --mode lib --calc-lib services.calculator.app.core:calculate_canonical `  
+# 5) Why this is the right architecture
+ 
+ 
+- Your **canonical contract** lives at the boundary (schemas + validators)
+ 
+- Your **calculator logic** is a pure function (easy to test, easy to benchmark, easy to diff)
+ 
+- FastAPI is just an adapter, not the system of record
+ 
+- CI becomes stable: no container startup flakiness, no port issues
+ 
+
+  
+If you want the final tightening pass, I can add:
+ 
+ 
+- a **Python schema validation of outputs inside `core.py`** (so it can never return invalid canonical JSON even in lib mode), and
+ 
+- a `tox`/`nox` task so `nox -s goldens` becomes your single CI entrypoint.

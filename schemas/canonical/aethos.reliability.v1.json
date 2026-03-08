@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aethos.app/schemas/canonical/aethos.reliability.v1.json",
+  "title": "Reliability (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "time_uncertainty_minutes": { "type": "integer", "minimum": 0 },
+    "flags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["HOUSES_UNRELIABLE", "ANGLES_UNRELIABLE", "MOON_SIGN_EDGE_CASE", "ASPECTS_PARTIALLY_UNRELIABLE", "EVENT_WINDOWS_UNRELIABLE"]
+      }
+    }
+  }
+}

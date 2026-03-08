@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "subject_id": "11111111-1111-1111-1111-111111111111",
+  "birth": {
+    "birth_source": "certificate",
+    "time_accuracy_minutes": 0,
+    "birth_local_date": "1991-11-06",
+    "birth_local_time": "17:43:00",
+    "birth_timezone": "America/Los_Angeles",
+    "geo": {
+      "lat": 37.7749,
+      "lon": -122.4194,
+      "place_label": "San Francisco, CA, USA"
+    }
+  },
+  "config": {
+    "zodiac_system": "tropical",
+    "house_system": "whole_sign",
+    "orb_policy": {
+      "name": "AethosMajor_8deg",
+      "major_aspects": {
+        "conjunction": 8,
+        "opposition": 8,
+        "trine": 8,
+        "square": 7,
+        "sextile": 6
+      }
+    },
+    "points_enabled": {
+      "lunar_nodes": true,
+      "chiron": true
+    }
+  },
+  "meta": {
+    "tag": "standard",
+    "notes": "Baseline US West Coast example."
+  }
+}

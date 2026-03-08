@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aethos.app/schemas/canonical/aethos.house_state.v1.json",
+  "title": "House State (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["house", "sign", "start_lon", "end_lon", "cusp_lon"],
+  "properties": {
+    "house": { "type": "integer", "minimum": 1, "maximum": 12 },
+    "sign": {
+      "type": "string",
+      "enum": ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"]
+    },
+    "start_lon": { "type": "number", "minimum": 0, "maximum": 360 },
+    "end_lon": { "type": "number", "minimum": 0, "maximum": 360 },
+    "cusp_lon": { "type": "number", "minimum": 0, "maximum": 360 }
+  }
+}

@@ -1,0 +1,2158 @@
+If Aethos is to mature from an interesting astrology platform into a **defensible technology company**, its advantage cannot rest on astrology alone. Calculation libraries, natal charts, and LLM-generated interpretations are rapidly becoming commodities. The real strategic question is **what becomes structurally difficult for competitors to replicate once Aethos is established**.
+ 
+Below are the **five deepest moats Aethos could realistically build**, examined from technological, economic, and product-strategy perspectives.
+  
+# 1. The Timing Intelligence Dataset
+ 
+*(The most powerful moat by far)*
+ 
+Every astrology application can compute a transit. Very few can answer a harder question:
+ 
+**What actually happens in people’s lives when those transits occur?**
+ 
+Aethos becomes defensible if it develops a **longitudinal behavioral dataset** connecting astrological timing events with real human outcomes.
+ 
+### The mechanism
+ 
+The system generates:
+ 
+ 
+- event windows (transits, progressions, dashas)
+ 
+- predicted themes
+ 
+- expected emotional or behavioral shifts
+ 
+
+ 
+Users then provide **structured feedback** through daily or weekly check-ins.
+ 
+Examples:
+ 
+  
+ 
+Input
+ 
+Output
+ 
+   
+ 
+Saturn square Sun window
+ 
+stress spike probability
+ 
+ 
+ 
+Venus transit to 7th house
+ 
+relationship activity
+ 
+ 
+ 
+Mars return
+ 
+motivation changes
+ 
+  
+ 
+Over time the platform accumulates **millions of correlations between celestial timing and lived experience.**
+ 
+### What that enables
+ 
+Aethos could eventually say things like:
+ 
+ 
+“Users with similar charts historically reported increased career volatility within 10 days of this transit window.”
+ 
+ 
+This transforms astrology from:
+ `symbolic interpretation ` 
+into:
+ `probabilistic forecasting ` 
+No competitor can replicate this without **years of user data**.
+ 
+That dataset becomes the **core intellectual property of the company**.
+  
+# 2. The Astro-Integration Kernel (AIK)
+ 
+Most astrology software treats each system separately:
+ 
+ 
+- Western astrology
+ 
+- Vedic astrology
+ 
+- Human Design
+ 
+- numerology
+ 
+
+ 
+Aethos instead converts every system into a **shared psychological language**.
+ 
+The Astro-Integration Kernel translates complex chart structures into **normalized theme vectors** such as:
+ 
+ 
+- agency
+ 
+- relational dynamics
+ 
+- structure
+ 
+- expression
+ 
+- inner life
+ 
+
+ 
+This creates a **unified ontology of personality and cycles**.
+ 
+Example:
+ 
+  
+ 
+Source
+ 
+Signal
+ 
+   
+ 
+Mars dominant chart
+ 
+agency increase
+ 
+ 
+ 
+BaZi Fire element dominance
+ 
+expression intensity
+ 
+ 
+ 
+Human Design gate 34
+ 
+action impulse
+ 
+  
+ 
+All of those become:
+ `Agency score ↑ ` 
+This architecture does three powerful things.
+ 
+### 1. Cross-system synthesis
+ 
+Multiple traditions reinforce the same psychological themes.
+ 
+### 2. Stable AI interpretation
+ 
+LLMs receive structured signals rather than chaotic astrological data.
+ 
+### 3. Extensibility
+ 
+New systems can plug in without rewriting the platform.
+ 
+If designed correctly, AIK becomes the **semantic backbone of Aethos**.
+ 
+Competitors copying astrology cannot easily copy the **ontology itself**.
+  
+# 3. Interpretive Governance Layer
+ 
+Most astrology apps fail for a simple reason:
+ 
+**LLM outputs are inconsistent.**
+ 
+You can ask the same chart question twice and receive different answers.
+ 
+Aethos can solve this with a **governed interpretation architecture**.
+ 
+Key elements include:
+ 
+### Prompt versioning
+ 
+Interpretation prompts are treated like software:
+ 
+ 
+- version controlled
+ 
+- regression tested
+ 
+- reproducible
+ 
+
+ 
+### Chart test suites
+ 
+The system maintains a set of fixed charts used to test interpretation stability.
+ 
+If prompts change, outputs must remain coherent.
+ 
+### Structured generation
+ 
+Instead of free text, the LLM produces:
+ `theme scores reasoning trace interpretive narrative ` 
+This creates a **scientific audit trail**.
+ 
+For professionals (astrologers, therapists, coaches), this transparency becomes extremely valuable.
+ 
+Over time Aethos could develop the reputation of being:
+ 
+ 
+“The most internally consistent interpretive engine in astrology.”
+ 
+ 
+Consistency is a surprisingly strong moat in symbolic systems.
+  
+# 4. Long-Form Narrative Infrastructure
+ 
+Aethos includes a unique system often overlooked in astrology software:
+ 
+**multi-agent narrative generation**.
+ 
+Rather than generating reports with one prompt, the system uses a coordinated set of writing agents.
+ 
+These agents divide responsibilities such as:
+ 
+Planning agents
+ 
+ 
+- conflict analyzer
+ 
+- character dynamics
+ 
+- life domain mapping
+ 
+
+ 
+Writing agents
+ 
+ 
+- exposition
+ 
+- rising tension
+ 
+- climax
+ 
+- resolution
+ 
+
+ 
+This architecture allows Aethos to produce **long-form reports that feel authored rather than generated**.
+ 
+Potential products include:
+ 
+ 
+- annual life forecasts
+ 
+- psychological dossiers
+ 
+- relationship compatibility analyses
+ 
+- career trajectory reports
+ 
+
+ 
+The narrative engine transforms astrology into something closer to:
+ `personal mythography ` 
+If done well, this becomes a **luxury tier offering**.
+  
+# 5. Psychological Measurement Layer
+ 
+Astrology traditionally lacks measurement.
+ 
+Aethos can change that by incorporating **structured self-observation tools**.
+ 
+Users periodically record variables such as:
+ 
+ 
+- mood
+ 
+- motivation
+ 
+- stress
+ 
+- social activity
+ 
+- decision confidence
+ 
+
+ 
+These short daily check-ins create a dataset similar to **experience sampling methodology used in psychology research**.
+ 
+The platform can then compare:
+ `predicted psychological themes ` 
+with
+ `actual reported experience ` 
+Over time the system learns which signals are meaningful for each individual.
+ 
+This produces **personalized calibration**.
+ 
+Example:
+ `Mars transits affect motivation strongly for this user but emotional states correlate more with Moon cycles. ` 
+The more someone uses Aethos, the **more accurate their forecasts become**.
+ 
+This produces strong user retention.
+  
+# 6. Developer Ecosystem (future moat)
+ 
+If Aethos eventually exposes APIs, developers could build:
+ 
+ 
+- astrology research tools
+ 
+- coaching dashboards
+ 
+- therapeutic journaling systems
+ 
+- decision-support tools
+ 
+
+ 
+Possible API endpoints:
+ `/chart /transits /event_windows /theme_scores /life_forecast ` 
+Once external tools rely on Aethos infrastructure, the platform becomes an **astrological operating system** rather than a single product.
+  
+# 7. Ethical and epistemic credibility
+ 
+Astrology suffers from reputational challenges.
+ 
+Aethos can differentiate itself by being transparent about what it actually does.
+ 
+Principles could include:
+ 
+ 
+- no deterministic predictions
+ 
+- probabilistic language
+ 
+- user sovereignty emphasized
+ 
+- privacy-first architecture
+ 
+
+ 
+This framing makes the platform viable in:
+ 
+ 
+- coaching environments
+ 
+- therapeutic settings
+ 
+- personal development markets
+ 
+
+ 
+Credibility becomes a **brand moat**.
+  
+# 8. The ultimate strategic position of Aethos
+ 
+If these moats develop correctly, Aethos stops being an astrology app.
+ 
+It becomes something closer to:
+ `a temporal intelligence platform ` 
+Where astrology functions as the **input signal** rather than the entire product.
+ 
+The real product becomes:
+ 
+ 
+- timing awareness
+ 
+- psychological insight
+ 
+- personal narrative frameworks
+ 
+- behavioral pattern recognition
+ 
+
+  
+# The strategic hierarchy of moats
+ 
+From strongest to weakest long-term protection:
+ 
+ 
+1.  
+**Timing Intelligence Dataset** (impossible to replicate quickly)
+ 
+ 
+2.  
+**Astro-Integration Kernel** (unique ontology)
+ 
+ 
+3.  
+**Psychological Measurement Layer** (user personalization)
+ 
+ 
+4.  
+**Interpretive Governance System** (consistency and trust)
+ 
+ 
+5.  
+**Narrative Generation Engine** (premium product experience)
+ 
+ 
+
+  
+# The most important strategic truth
+ 
+Most astrology startups fail because they focus on:
+ `interpretations ` 
+But interpretations are cheap.
+ 
+The real value is:
+ `timing + data + feedback loops ` 
+If Aethos captures those elements early, it could quietly become the **most sophisticated astrology-driven intelligence system ever built.**
+  
+If you'd like, I can also show you something extremely important for the future of the project:
+ 
+**the architecture of the “Canonical Calculator” — the single component that everything in Aethos must depend on if the platform is going to remain internally consistent.**
+ 
+That piece determines whether the entire system becomes fragile or mathematically reliable.
+
+Absolutely—because this is the fulcrum. If Aethos is a serious platform, it lives or dies on a single invariant: **one canonical calculator** that produces **the only “truth” the rest of the system is allowed to reference**. Everything else—interpretation, timing, journaling, dashboards, multi-system fusion—must sit downstream of that deterministic truth source.
+ 
+Below is a **developer-grade, architecture-level** spec for the **Canonical Calculator**: what it is, what it must output, how it should be versioned, and how it supports multiple astrological systems without forking reality.
+  
+# 1) What the Canonical Calculator is
+ 
+The Canonical Calculator is a **deterministic computation service** that:
+ 
+ 
+1. Ingests **birth and configuration facts** (time, place, timezone, system options)
+ 
+2. Produces a **normalized astronomical state** + **derived astrological primitives**
+ 
+3. Emits **machine-usable JSON** with strict versioning, allowing downstream services to operate without recalculating or guessing.
+ 
+
+ 
+**Non-negotiable constraint:** LLMs never compute. LLMs interpret **only** canonical outputs.
+  
+# 2) Why “canonical” matters
+ 
+Without a canonical engine, you get:
+ 
+ 
+- the same user producing different chart results depending on screen, feature, or prompt
+ 
+- interpretation drift because different modules compute different house cusps/aspect orbs
+ 
+- timing windows shifting silently across releases
+ 
+
+ 
+Aethos needs the opposite:
+ 
+ 
+- **reproducible charts**
+ 
+- **reproducible event windows**
+ 
+- **auditable versioning**
+ 
+- **clear system toggles** (tropical vs sidereal, Whole Sign vs Placidus, ayanamsa choice, etc.)
+ 
+
+  
+# 3) Inputs: facts, not vibes
+ 
+## Required input schema (minimum)
+ 
+### Identity / provenance
+ 
+ 
+- `subject_id` (UUID)
+ 
+- `name_full` (string; optional)
+ 
+- `birth_source` (“certificate” | “family_memory” | “approx”)
+ 
+- `time_accuracy_minutes` (int, 0–720)
+ 
+
+ 
+### Birth data
+ 
+ 
+- `birth_date` (YYYY-MM-DD)
+ 
+- `birth_time` (HH:MM[:SS])  *(if unknown, must be null and handled explicitly)*
+ 
+- `birth_place`: 
+ 
+  - `lat` (float)
+ 
+  - `lon` (float)
+ 
+  - `place_label` (string)
+ 
+
+ 
+ 
+- `timezone` (IANA string, e.g. `"America/Los_Angeles"`)
+ 
+
+ 
+### Configuration toggles (must be explicit)
+ 
+ 
+- `zodiac_system`: 
+ 
+  - `"tropical"` OR `"sidereal"`
+ 
+
+ 
+ 
+- If sidereal: 
+ 
+  - `ayanamsa` (e.g., `"lahiri"` | `"raman"` | `"fagan_bradley"`)
+ 
+
+ 
+ 
+- `house_system` (for Western): 
+ 
+  - `"whole_sign"` (default)
+ 
+  - optional: `"placidus"`, `"koch"`, `"regiomontanus"` etc.
+ 
+
+ 
+ 
+- `orb_policy` (named policy object; do not hardcode)
+ 
+- `points_enabled` (nodes, chiron, asteroids, etc.)
+ 
+
+ 
+### Timing options
+ 
+ 
+- `include_velocity` (boolean; should be true in canonical output)
+ 
+- `ephemeris`: 
+ 
+  - `provider` = `"swisseph"`
+ 
+  - `swe_version`
+ 
+  - `ephemeris_fileset` (e.g. DE431 subset)
+ 
+
+ 
+ 
+
+ 
+**Rule:** every toggle is stored. No implicit defaults in downstream layers.
+  
+# 4) Outputs: the canonical JSON contract
+ 
+The canonical output must be **normalized**, **complete**, **traceable**, and **cacheable**.
+ 
+## A) Canonical birth record (astronomical truth)
+ 
+This is the root of everything.
+ 
+ 
+- `birth_local_datetime`
+ 
+- `birth_timezone`
+ 
+- `birth_utc_datetime`
+ 
+- `julian_day`
+ 
+- `delta_t` (if used)
+ 
+- `geo` (lat/lon)
+ 
+- `calc_version` (semver + git hash)
+ 
+- `ephemeris_version` (swisseph + files)
+ 
+
+ 
+This ensures reproducibility across years.
+ 
+## B) Western chart primitives (tropical or sidereal)
+ 
+Regardless of interpretation, you must output the raw state.
+ 
+### Planets (all with speed)
+ 
+For each body:
+ 
+ 
+- `lon` (0–360)
+ 
+- `lat`
+ 
+- `distance`
+ 
+- `speed_lon`
+ 
+- `speed_lat`
+ 
+- `speed_dist`
+ 
+- `retrograde` (derived: speed_lon < 0)
+ 
+- `sign` (derived)
+ 
+- `house` (derived via house system)
+ 
+
+ 
+**Why speed matters:** retrogrades, stations, and event-window logic require it.
+ 
+### Angles / houses
+ 
+Depending on system:
+ 
+ 
+- Whole Sign: 12 houses derived from Asc sign
+ 
+- Quadrant: cusps, MC, ASC computed
+ 
+
+ 
+Store:
+ 
+ 
+- `asc_lon`
+ 
+- `mc_lon`
+ 
+- house cusps if relevant
+ 
+- `houses` array with sign + degrees coverage
+ 
+
+ 
+## C) Aspect graph (normalized)
+ 
+Aspects are not prose. They are graph edges with measured separation.
+ 
+Each aspect edge:
+ 
+ 
+- `body_a`
+ 
+- `body_b`
+ 
+- `aspect_type`
+ 
+- `exact_angle`
+ 
+- `orb`
+ 
+- `applying_or_separating` (derived from speeds)
+ 
+- `strength_score` (optional but useful)
+ 
+
+ 
+This becomes the structural input for interpretation.
+ 
+## D) Derived conditions (Hellenistic-friendly)
+ 
+These are computed properties that reduce downstream complexity.
+ 
+Examples:
+ 
+ 
+- `sect` (day/night chart)
+ 
+- dignity status (domicile/exaltation/detriment/fall)
+ 
+- angularity (angular/succedent/cadent)
+ 
+- house ruler chains
+ 
+
+ 
+These are deterministic and can be versioned.
+  
+# 5) Multi-system support without fracturing the “truth”
+ 
+Aethos can support multiple systems, but **it must not compute reality twice**.
+ 
+## The right approach
+ 
+### Step 1: Canonical astronomical state
+ 
+Compute planet longitudes/speeds in a neutral frame.
+ 
+### Step 2: Project into “systems”
+ 
+Create separate derived objects:
+ 
+ 
+- `western_tropical.whole_sign`
+ 
+- `western_tropical.placidus`
+ 
+- `sidereal_lahiri.whole_sign`
+ 
+- `sidereal_lahiri.placidus` (if ever)
+ 
+- `vedic.nakshatras` (derived from sidereal Moon etc.)
+ 
+- `bazi.four_pillars` (calendar-derived layer)
+ 
+
+ 
+The canonical “root truth” stays one; projections are derived.
+  
+# 6) Versioning strategy (this is where most apps fail)
+ 
+Every canonical output must include:
+ 
+ 
+- `calculator_version` (semver)
+ 
+- `build_hash` (git SHA)
+ 
+- `ephemeris_version`
+ 
+- `config_hash` (hash of input config toggles)
+ 
+- `schema_version` (JSON schema semver)
+ 
+
+ 
+## Key rule:
+ 
+If any of these change, you treat the output as a different artifact.
+ 
+This guarantees you can reproduce a user’s reading from six months ago even if the product evolves.
+  
+# 7) Caching strategy (cost control + speed)
+ 
+Canonical computations are deterministic, so caching is extremely effective.
+ 
+### Cache key
+ 
+`cache_key = hash(subject_birth_facts + config_toggles + calculator_version + ephemeris_version)`
+ 
+Store:
+ 
+ 
+- canonical JSON output
+ 
+- precomputed event windows for certain horizons (e.g., next 90 days)
+ 
+
+ 
+This makes the platform feel instantaneous.
+  
+# 8) Event-window generator (downstream but deterministic)
+ 
+Aethos should treat “timing events” as another deterministic module that consumes canonical chart primitives.
+ 
+### Event types (examples)
+ 
+ 
+- ingress: planet enters sign
+ 
+- station: retrograde/direct station (speed crosses 0)
+ 
+- exact aspect: transit body hits natal point within orb window
+ 
+- eclipse proximity windows
+ 
+- lunation cycles (new/full moon) relative to natal points/houses
+ 
+
+ 
+Each event has:
+ 
+ 
+- `event_id`
+ 
+- `type`
+ 
+- `start_time`
+ 
+- `peak_time`
+ 
+- `end_time`
+ 
+- `bodies_involved`
+ 
+- `orb_used`
+ 
+- `confidence` (for approximated times, not meaning)
+ 
+
+ 
+This creates the raw feed for “Timing Intelligence.”
+  
+# 9) Handling uncertain birth time (critical realism)
+ 
+Most astrology apps fake this. Aethos should be explicit.
+ 
+If time is unknown or approximate:
+ 
+ 
+- Output a “time-uncertainty envelope”
+ 
+- Provide: 
+ 
+  - reliable elements: planetary signs (except Moon if very close to boundary), aspects (some), outer planet placements
+ 
+  - unreliable elements: houses, ASC/MC, Part of Fortune, some timing triggers
+ 
+
+ 
+ 
+
+ 
+The canonical output should include:
+ 
+ 
+- `reliability_flags` per feature
+ 
+- `time_uncertainty_minutes`
+ 
+
+ 
+This is a trust moat.
+  
+# 10) Minimal API surface (how the rest of Aethos talks to it)
+ 
+Recommended endpoints:
+ 
+### Compute
+ 
+ 
+- `POST /calc/canonical` 
+ 
+  - input: birth facts + toggles
+ 
+  - output: canonical chart JSON
+ 
+
+ 
+ 
+
+ 
+### Read cached
+ 
+ 
+- `GET /calc/canonical/{subject_id}?config_hash=...`
+ 
+
+ 
+### Generate event windows
+ 
+ 
+- `POST /calc/events` 
+ 
+  - input: canonical output + horizon
+ 
+  - output: timing events list
+ 
+
+ 
+ 
+
+ 
+### Batch / async (later)
+ 
+ 
+- `POST /calc/batch`
+ 
+- `GET /calc/job/{job_id}`
+ 
+
+  
+# 11) Repo module boundaries (implementation-ready)
+ 
+A clean structure:
+ 
+ 
+-  
+`packages/core-types/` JSON schemas, enums, validation
+ 
+ 
+-  
+`services/calculator/` Swiss Ephemeris integration, deterministic compute
+ 
+ 
+-  
+`services/events/` event window detection + time series logic
+ 
+ 
+-  
+`services/interpretation/` AIK theme extraction + LLM orchestration (read-only access to canonical outputs)
+ 
+ 
+-  
+`packages/sdk/` client SDK to call calculator + events
+ 
+ 
+
+  
+# 12) What you should build first (in order)
+ 
+If you want the shortest path to a real platform:
+ 
+ 
+1. **Canonical chart compute** (Western tropical + Whole Sign)
+ 
+2. **Event window generator** (transit-to-natal exact hits + stations + ingresses)
+ 
+3. **Theme scoring (AIK v0)** from canonical structures
+ 
+4. **Interpretation layer** (governed, prompt versioned)
+ 
+5. **Journaling/EMA capture** for feedback loop calibration
+ 
+
+ 
+Everything else is optional until these are correct.
+  
+# 13) “Definition of Done” for Canonical Calculator v1
+ 
+Aethos can call the Canonical Calculator “done” when:
+ 
+ 
+- same inputs always produce identical outputs
+ 
+- all toggles are explicit and stored
+ 
+- outputs are schema-validated
+ 
+- versioning and provenance are embedded
+ 
+- houses, aspects, retrogrades are computed correctly
+ 
+- event windows can be generated deterministically from canonical outputs
+ 
+
+  
+## If you want, next step:
+ 
+I can draft the **exact JSON Schemas** for:
+ 
+ 
+- `CanonicalBirthRecord`
+ 
+- `CanonicalChart`
+ 
+- `PlanetState`
+ 
+- `AspectEdge`
+ 
+- `TimingEvent`
+ 
+
+ 
+…and a “golden test suite” plan (10–20 charts with known outputs) so you can regression test every release like serious software.
+ 
+If you say “yes,” I’ll output the schemas in a copy-paste ready block with semver and validation notes.
+
+If Aethos is to mature from an interesting astrology platform into a **defensible technology company**, its advantage cannot rest on astrology alone. Calculation libraries, natal charts, and LLM-generated interpretations are rapidly becoming commodities. The real strategic question is **what becomes structurally difficult for competitors to replicate once Aethos is established**.
+ 
+Below are the **five deepest moats Aethos could realistically build**, examined from technological, economic, and product-strategy perspectives.
+  
+# 1. The Timing Intelligence Dataset
+ 
+*(The most powerful moat by far)*
+ 
+Every astrology application can compute a transit. Very few can answer a harder question:
+ 
+**What actually happens in people’s lives when those transits occur?**
+ 
+Aethos becomes defensible if it develops a **longitudinal behavioral dataset** connecting astrological timing events with real human outcomes.
+ 
+### The mechanism
+ 
+The system generates:
+ 
+ 
+- event windows (transits, progressions, dashas)
+ 
+- predicted themes
+ 
+- expected emotional or behavioral shifts
+ 
+
+ 
+Users then provide **structured feedback** through daily or weekly check-ins.
+ 
+Examples:
+ 
+  
+ 
+Input
+ 
+Output
+ 
+   
+ 
+Saturn square Sun window
+ 
+stress spike probability
+ 
+ 
+ 
+Venus transit to 7th house
+ 
+relationship activity
+ 
+ 
+ 
+Mars return
+ 
+motivation changes
+ 
+  
+ 
+Over time the platform accumulates **millions of correlations between celestial timing and lived experience.**
+ 
+### What that enables
+ 
+Aethos could eventually say things like:
+ 
+ 
+“Users with similar charts historically reported increased career volatility within 10 days of this transit window.”
+ 
+ 
+This transforms astrology from:
+ `symbolic interpretation ` 
+into:
+ `probabilistic forecasting ` 
+No competitor can replicate this without **years of user data**.
+ 
+That dataset becomes the **core intellectual property of the company**.
+  
+# 2. The Astro-Integration Kernel (AIK)
+ 
+Most astrology software treats each system separately:
+ 
+ 
+- Western astrology
+ 
+- Vedic astrology
+ 
+- Human Design
+ 
+- numerology
+ 
+
+ 
+Aethos instead converts every system into a **shared psychological language**.
+ 
+The Astro-Integration Kernel translates complex chart structures into **normalized theme vectors** such as:
+ 
+ 
+- agency
+ 
+- relational dynamics
+ 
+- structure
+ 
+- expression
+ 
+- inner life
+ 
+
+ 
+This creates a **unified ontology of personality and cycles**.
+ 
+Example:
+ 
+  
+ 
+Source
+ 
+Signal
+ 
+   
+ 
+Mars dominant chart
+ 
+agency increase
+ 
+ 
+ 
+BaZi Fire element dominance
+ 
+expression intensity
+ 
+ 
+ 
+Human Design gate 34
+ 
+action impulse
+ 
+  
+ 
+All of those become:
+ `Agency score ↑ ` 
+This architecture does three powerful things.
+ 
+### 1. Cross-system synthesis
+ 
+Multiple traditions reinforce the same psychological themes.
+ 
+### 2. Stable AI interpretation
+ 
+LLMs receive structured signals rather than chaotic astrological data.
+ 
+### 3. Extensibility
+ 
+New systems can plug in without rewriting the platform.
+ 
+If designed correctly, AIK becomes the **semantic backbone of Aethos**.
+ 
+Competitors copying astrology cannot easily copy the **ontology itself**.
+  
+# 3. Interpretive Governance Layer
+ 
+Most astrology apps fail for a simple reason:
+ 
+**LLM outputs are inconsistent.**
+ 
+You can ask the same chart question twice and receive different answers.
+ 
+Aethos can solve this with a **governed interpretation architecture**.
+ 
+Key elements include:
+ 
+### Prompt versioning
+ 
+Interpretation prompts are treated like software:
+ 
+ 
+- version controlled
+ 
+- regression tested
+ 
+- reproducible
+ 
+
+ 
+### Chart test suites
+ 
+The system maintains a set of fixed charts used to test interpretation stability.
+ 
+If prompts change, outputs must remain coherent.
+ 
+### Structured generation
+ 
+Instead of free text, the LLM produces:
+ `theme scores reasoning trace interpretive narrative ` 
+This creates a **scientific audit trail**.
+ 
+For professionals (astrologers, therapists, coaches), this transparency becomes extremely valuable.
+ 
+Over time Aethos could develop the reputation of being:
+ 
+ 
+“The most internally consistent interpretive engine in astrology.”
+ 
+ 
+Consistency is a surprisingly strong moat in symbolic systems.
+  
+# 4. Long-Form Narrative Infrastructure
+ 
+Aethos includes a unique system often overlooked in astrology software:
+ 
+**multi-agent narrative generation**.
+ 
+Rather than generating reports with one prompt, the system uses a coordinated set of writing agents.
+ 
+These agents divide responsibilities such as:
+ 
+Planning agents
+ 
+ 
+- conflict analyzer
+ 
+- character dynamics
+ 
+- life domain mapping
+ 
+
+ 
+Writing agents
+ 
+ 
+- exposition
+ 
+- rising tension
+ 
+- climax
+ 
+- resolution
+ 
+
+ 
+This architecture allows Aethos to produce **long-form reports that feel authored rather than generated**.
+ 
+Potential products include:
+ 
+ 
+- annual life forecasts
+ 
+- psychological dossiers
+ 
+- relationship compatibility analyses
+ 
+- career trajectory reports
+ 
+
+ 
+The narrative engine transforms astrology into something closer to:
+ `personal mythography ` 
+If done well, this becomes a **luxury tier offering**.
+  
+# 5. Psychological Measurement Layer
+ 
+Astrology traditionally lacks measurement.
+ 
+Aethos can change that by incorporating **structured self-observation tools**.
+ 
+Users periodically record variables such as:
+ 
+ 
+- mood
+ 
+- motivation
+ 
+- stress
+ 
+- social activity
+ 
+- decision confidence
+ 
+
+ 
+These short daily check-ins create a dataset similar to **experience sampling methodology used in psychology research**.
+ 
+The platform can then compare:
+ `predicted psychological themes ` 
+with
+ `actual reported experience ` 
+Over time the system learns which signals are meaningful for each individual.
+ 
+This produces **personalized calibration**.
+ 
+Example:
+ `Mars transits affect motivation strongly for this user but emotional states correlate more with Moon cycles. ` 
+The more someone uses Aethos, the **more accurate their forecasts become**.
+ 
+This produces strong user retention.
+  
+# 6. Developer Ecosystem (future moat)
+ 
+If Aethos eventually exposes APIs, developers could build:
+ 
+ 
+- astrology research tools
+ 
+- coaching dashboards
+ 
+- therapeutic journaling systems
+ 
+- decision-support tools
+ 
+
+ 
+Possible API endpoints:
+ `/chart /transits /event_windows /theme_scores /life_forecast ` 
+Once external tools rely on Aethos infrastructure, the platform becomes an **astrological operating system** rather than a single product.
+  
+# 7. Ethical and epistemic credibility
+ 
+Astrology suffers from reputational challenges.
+ 
+Aethos can differentiate itself by being transparent about what it actually does.
+ 
+Principles could include:
+ 
+ 
+- no deterministic predictions
+ 
+- probabilistic language
+ 
+- user sovereignty emphasized
+ 
+- privacy-first architecture
+ 
+
+ 
+This framing makes the platform viable in:
+ 
+ 
+- coaching environments
+ 
+- therapeutic settings
+ 
+- personal development markets
+ 
+
+ 
+Credibility becomes a **brand moat**.
+  
+# 8. The ultimate strategic position of Aethos
+ 
+If these moats develop correctly, Aethos stops being an astrology app.
+ 
+It becomes something closer to:
+ `a temporal intelligence platform ` 
+Where astrology functions as the **input signal** rather than the entire product.
+ 
+The real product becomes:
+ 
+ 
+- timing awareness
+ 
+- psychological insight
+ 
+- personal narrative frameworks
+ 
+- behavioral pattern recognition
+ 
+
+  
+# The strategic hierarchy of moats
+ 
+From strongest to weakest long-term protection:
+ 
+ 
+1.  
+**Timing Intelligence Dataset** (impossible to replicate quickly)
+ 
+ 
+2.  
+**Astro-Integration Kernel** (unique ontology)
+ 
+ 
+3.  
+**Psychological Measurement Layer** (user personalization)
+ 
+ 
+4.  
+**Interpretive Governance System** (consistency and trust)
+ 
+ 
+5.  
+**Narrative Generation Engine** (premium product experience)
+ 
+ 
+
+  
+# The most important strategic truth
+ 
+Most astrology startups fail because they focus on:
+ `interpretations ` 
+But interpretations are cheap.
+ 
+The real value is:
+ `timing + data + feedback loops ` 
+If Aethos captures those elements early, it could quietly become the **most sophisticated astrology-driven intelligence system ever built.**
+  
+If you'd like, I can also show you something extremely important for the future of the project:
+ 
+**the architecture of the “Canonical Calculator” — the single component that everything in Aethos must depend on if the platform is going to remain internally consistent.**
+ 
+That piece determines whether the entire system becomes fragile or mathematically reliable.
+
+Absolutely—because this is the fulcrum. If Aethos is a serious platform, it lives or dies on a single invariant: **one canonical calculator** that produces **the only “truth” the rest of the system is allowed to reference**. Everything else—interpretation, timing, journaling, dashboards, multi-system fusion—must sit downstream of that deterministic truth source.
+ 
+Below is a **developer-grade, architecture-level** spec for the **Canonical Calculator**: what it is, what it must output, how it should be versioned, and how it supports multiple astrological systems without forking reality.
+  
+# 1) What the Canonical Calculator is
+ 
+The Canonical Calculator is a **deterministic computation service** that:
+ 
+ 
+1. Ingests **birth and configuration facts** (time, place, timezone, system options)
+ 
+2. Produces a **normalized astronomical state** + **derived astrological primitives**
+ 
+3. Emits **machine-usable JSON** with strict versioning, allowing downstream services to operate without recalculating or guessing.
+ 
+
+ 
+**Non-negotiable constraint:** LLMs never compute. LLMs interpret **only** canonical outputs.
+  
+# 2) Why “canonical” matters
+ 
+Without a canonical engine, you get:
+ 
+ 
+- the same user producing different chart results depending on screen, feature, or prompt
+ 
+- interpretation drift because different modules compute different house cusps/aspect orbs
+ 
+- timing windows shifting silently across releases
+ 
+
+ 
+Aethos needs the opposite:
+ 
+ 
+- **reproducible charts**
+ 
+- **reproducible event windows**
+ 
+- **auditable versioning**
+ 
+- **clear system toggles** (tropical vs sidereal, Whole Sign vs Placidus, ayanamsa choice, etc.)
+ 
+
+  
+# 3) Inputs: facts, not vibes
+ 
+## Required input schema (minimum)
+ 
+### Identity / provenance
+ 
+ 
+- `subject_id` (UUID)
+ 
+- `name_full` (string; optional)
+ 
+- `birth_source` (“certificate” | “family_memory” | “approx”)
+ 
+- `time_accuracy_minutes` (int, 0–720)
+ 
+
+ 
+### Birth data
+ 
+ 
+- `birth_date` (YYYY-MM-DD)
+ 
+- `birth_time` (HH:MM[:SS])  *(if unknown, must be null and handled explicitly)*
+ 
+- `birth_place`: 
+ 
+  - `lat` (float)
+ 
+  - `lon` (float)
+ 
+  - `place_label` (string)
+ 
+
+ 
+ 
+- `timezone` (IANA string, e.g. `"America/Los_Angeles"`)
+ 
+
+ 
+### Configuration toggles (must be explicit)
+ 
+ 
+- `zodiac_system`: 
+ 
+  - `"tropical"` OR `"sidereal"`
+ 
+
+ 
+ 
+- If sidereal: 
+ 
+  - `ayanamsa` (e.g., `"lahiri"` | `"raman"` | `"fagan_bradley"`)
+ 
+
+ 
+ 
+- `house_system` (for Western): 
+ 
+  - `"whole_sign"` (default)
+ 
+  - optional: `"placidus"`, `"koch"`, `"regiomontanus"` etc.
+ 
+
+ 
+ 
+- `orb_policy` (named policy object; do not hardcode)
+ 
+- `points_enabled` (nodes, chiron, asteroids, etc.)
+ 
+
+ 
+### Timing options
+ 
+ 
+- `include_velocity` (boolean; should be true in canonical output)
+ 
+- `ephemeris`: 
+ 
+  - `provider` = `"swisseph"`
+ 
+  - `swe_version`
+ 
+  - `ephemeris_fileset` (e.g. DE431 subset)
+ 
+
+ 
+ 
+
+ 
+**Rule:** every toggle is stored. No implicit defaults in downstream layers.
+  
+# 4) Outputs: the canonical JSON contract
+ 
+The canonical output must be **normalized**, **complete**, **traceable**, and **cacheable**.
+ 
+## A) Canonical birth record (astronomical truth)
+ 
+This is the root of everything.
+ 
+ 
+- `birth_local_datetime`
+ 
+- `birth_timezone`
+ 
+- `birth_utc_datetime`
+ 
+- `julian_day`
+ 
+- `delta_t` (if used)
+ 
+- `geo` (lat/lon)
+ 
+- `calc_version` (semver + git hash)
+ 
+- `ephemeris_version` (swisseph + files)
+ 
+
+ 
+This ensures reproducibility across years.
+ 
+## B) Western chart primitives (tropical or sidereal)
+ 
+Regardless of interpretation, you must output the raw state.
+ 
+### Planets (all with speed)
+ 
+For each body:
+ 
+ 
+- `lon` (0–360)
+ 
+- `lat`
+ 
+- `distance`
+ 
+- `speed_lon`
+ 
+- `speed_lat`
+ 
+- `speed_dist`
+ 
+- `retrograde` (derived: speed_lon < 0)
+ 
+- `sign` (derived)
+ 
+- `house` (derived via house system)
+ 
+
+ 
+**Why speed matters:** retrogrades, stations, and event-window logic require it.
+ 
+### Angles / houses
+ 
+Depending on system:
+ 
+ 
+- Whole Sign: 12 houses derived from Asc sign
+ 
+- Quadrant: cusps, MC, ASC computed
+ 
+
+ 
+Store:
+ 
+ 
+- `asc_lon`
+ 
+- `mc_lon`
+ 
+- house cusps if relevant
+ 
+- `houses` array with sign + degrees coverage
+ 
+
+ 
+## C) Aspect graph (normalized)
+ 
+Aspects are not prose. They are graph edges with measured separation.
+ 
+Each aspect edge:
+ 
+ 
+- `body_a`
+ 
+- `body_b`
+ 
+- `aspect_type`
+ 
+- `exact_angle`
+ 
+- `orb`
+ 
+- `applying_or_separating` (derived from speeds)
+ 
+- `strength_score` (optional but useful)
+ 
+
+ 
+This becomes the structural input for interpretation.
+ 
+## D) Derived conditions (Hellenistic-friendly)
+ 
+These are computed properties that reduce downstream complexity.
+ 
+Examples:
+ 
+ 
+- `sect` (day/night chart)
+ 
+- dignity status (domicile/exaltation/detriment/fall)
+ 
+- angularity (angular/succedent/cadent)
+ 
+- house ruler chains
+ 
+
+ 
+These are deterministic and can be versioned.
+  
+# 5) Multi-system support without fracturing the “truth”
+ 
+Aethos can support multiple systems, but **it must not compute reality twice**.
+ 
+## The right approach
+ 
+### Step 1: Canonical astronomical state
+ 
+Compute planet longitudes/speeds in a neutral frame.
+ 
+### Step 2: Project into “systems”
+ 
+Create separate derived objects:
+ 
+ 
+- `western_tropical.whole_sign`
+ 
+- `western_tropical.placidus`
+ 
+- `sidereal_lahiri.whole_sign`
+ 
+- `sidereal_lahiri.placidus` (if ever)
+ 
+- `vedic.nakshatras` (derived from sidereal Moon etc.)
+ 
+- `bazi.four_pillars` (calendar-derived layer)
+ 
+
+ 
+The canonical “root truth” stays one; projections are derived.
+  
+# 6) Versioning strategy (this is where most apps fail)
+ 
+Every canonical output must include:
+ 
+ 
+- `calculator_version` (semver)
+ 
+- `build_hash` (git SHA)
+ 
+- `ephemeris_version`
+ 
+- `config_hash` (hash of input config toggles)
+ 
+- `schema_version` (JSON schema semver)
+ 
+
+ 
+## Key rule:
+ 
+If any of these change, you treat the output as a different artifact.
+ 
+This guarantees you can reproduce a user’s reading from six months ago even if the product evolves.
+  
+# 7) Caching strategy (cost control + speed)
+ 
+Canonical computations are deterministic, so caching is extremely effective.
+ 
+### Cache key
+ 
+`cache_key = hash(subject_birth_facts + config_toggles + calculator_version + ephemeris_version)`
+ 
+Store:
+ 
+ 
+- canonical JSON output
+ 
+- precomputed event windows for certain horizons (e.g., next 90 days)
+ 
+
+ 
+This makes the platform feel instantaneous.
+  
+# 8) Event-window generator (downstream but deterministic)
+ 
+Aethos should treat “timing events” as another deterministic module that consumes canonical chart primitives.
+ 
+### Event types (examples)
+ 
+ 
+- ingress: planet enters sign
+ 
+- station: retrograde/direct station (speed crosses 0)
+ 
+- exact aspect: transit body hits natal point within orb window
+ 
+- eclipse proximity windows
+ 
+- lunation cycles (new/full moon) relative to natal points/houses
+ 
+
+ 
+Each event has:
+ 
+ 
+- `event_id`
+ 
+- `type`
+ 
+- `start_time`
+ 
+- `peak_time`
+ 
+- `end_time`
+ 
+- `bodies_involved`
+ 
+- `orb_used`
+ 
+- `confidence` (for approximated times, not meaning)
+ 
+
+ 
+This creates the raw feed for “Timing Intelligence.”
+  
+# 9) Handling uncertain birth time (critical realism)
+ 
+Most astrology apps fake this. Aethos should be explicit.
+ 
+If time is unknown or approximate:
+ 
+ 
+- Output a “time-uncertainty envelope”
+ 
+- Provide: 
+ 
+  - reliable elements: planetary signs (except Moon if very close to boundary), aspects (some), outer planet placements
+ 
+  - unreliable elements: houses, ASC/MC, Part of Fortune, some timing triggers
+ 
+
+ 
+ 
+
+ 
+The canonical output should include:
+ 
+ 
+- `reliability_flags` per feature
+ 
+- `time_uncertainty_minutes`
+ 
+
+ 
+This is a trust moat.
+  
+# 10) Minimal API surface (how the rest of Aethos talks to it)
+ 
+Recommended endpoints:
+ 
+### Compute
+ 
+ 
+- `POST /calc/canonical` 
+ 
+  - input: birth facts + toggles
+ 
+  - output: canonical chart JSON
+ 
+
+ 
+ 
+
+ 
+### Read cached
+ 
+ 
+- `GET /calc/canonical/{subject_id}?config_hash=...`
+ 
+
+ 
+### Generate event windows
+ 
+ 
+- `POST /calc/events` 
+ 
+  - input: canonical output + horizon
+ 
+  - output: timing events list
+ 
+
+ 
+ 
+
+ 
+### Batch / async (later)
+ 
+ 
+- `POST /calc/batch`
+ 
+- `GET /calc/job/{job_id}`
+ 
+
+  
+# 11) Repo module boundaries (implementation-ready)
+ 
+A clean structure:
+ 
+ 
+-  
+`packages/core-types/` JSON schemas, enums, validation
+ 
+ 
+-  
+`services/calculator/` Swiss Ephemeris integration, deterministic compute
+ 
+ 
+-  
+`services/events/` event window detection + time series logic
+ 
+ 
+-  
+`services/interpretation/` AIK theme extraction + LLM orchestration (read-only access to canonical outputs)
+ 
+ 
+-  
+`packages/sdk/` client SDK to call calculator + events
+ 
+ 
+
+  
+# 12) What you should build first (in order)
+ 
+If you want the shortest path to a real platform:
+ 
+ 
+1. **Canonical chart compute** (Western tropical + Whole Sign)
+ 
+2. **Event window generator** (transit-to-natal exact hits + stations + ingresses)
+ 
+3. **Theme scoring (AIK v0)** from canonical structures
+ 
+4. **Interpretation layer** (governed, prompt versioned)
+ 
+5. **Journaling/EMA capture** for feedback loop calibration
+ 
+
+ 
+Everything else is optional until these are correct.
+  
+# 13) “Definition of Done” for Canonical Calculator v1
+ 
+Aethos can call the Canonical Calculator “done” when:
+ 
+ 
+- same inputs always produce identical outputs
+ 
+- all toggles are explicit and stored
+ 
+- outputs are schema-validated
+ 
+- versioning and provenance are embedded
+ 
+- houses, aspects, retrogrades are computed correctly
+ 
+- event windows can be generated deterministically from canonical outputs
+ 
+
+  
+## If you want, next step:
+ 
+I can draft the **exact JSON Schemas** for:
+ 
+ 
+- `CanonicalBirthRecord`
+ 
+- `CanonicalChart`
+ 
+- `PlanetState`
+ 
+- `AspectEdge`
+ 
+- `TimingEvent`
+ 
+
+ 
+…and a “golden test suite” plan (10–20 charts with known outputs) so you can regression test every release like serious software.
+ 
+If you say “yes,” I’ll output the schemas in a copy-paste ready block with semver and validation notes.
+
+Perfect. Below is a **copy-paste ready, developer-grade** set of JSON Schemas (Draft 2020-12) for the core Aethos canonical artifacts, plus a **golden test suite plan** that will keep the whole platform stable across releases.
+ 
+I’m giving you a **v1.0.0 schema set** with explicit version/provenance, strict typing, and room for future expansion without breaking existing clients.
+  
+## 0) Conventions
+ 
+ 
+- JSON Schema: **2020-12**
+ 
+- Schema versioning: `schema_version` is semantic (e.g., `"1.0.0"`)
+ 
+- Determinism: calculators must emit **stable ordering** for arrays where possible (e.g., planets ordered by enum list).
+ 
+- Time: use **RFC3339** timestamps in UTC for computed times.
+ 
+
+  
+# 1) `aethos.canonical.v1.json` (Root Schema)
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.canonical.v1.json",   "title": "Aethos Canonical Output (v1)",   "type": "object",   "additionalProperties": false,   "required": [     "schema_version",     "calculator",     "birth_record",     "config",     "western_chart",     "aspects",     "derived"   ],   "properties": {     "schema_version": {       "type": "string",       "const": "1.0.0"     },     "calculator": { "$ref": "https://aethos.app/schemas/canonical/aethos.calculator_provenance.v1.json" },     "birth_record": { "$ref": "https://aethos.app/schemas/canonical/aethos.birth_record.v1.json" },     "config": { "$ref": "https://aethos.app/schemas/canonical/aethos.calc_config.v1.json" },     "western_chart": { "$ref": "https://aethos.app/schemas/canonical/aethos.western_chart.v1.json" },     "aspects": {       "type": "array",       "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.aspect_edge.v1.json" }     },     "derived": { "$ref": "https://aethos.app/schemas/canonical/aethos.derived_bundle.v1.json" },     "reliability": { "$ref": "https://aethos.app/schemas/canonical/aethos.reliability.v1.json" }   } } `  
+# 2) Provenance / Versioning
+ 
+## 2.1 `aethos.calculator_provenance.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.calculator_provenance.v1.json",   "title": "Calculator Provenance (v1)",   "type": "object",   "additionalProperties": false,   "required": [     "calculator_version",     "build_hash",     "ephemeris",     "generated_at_utc",     "config_hash"   ],   "properties": {     "calculator_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },     "build_hash": { "type": "string", "minLength": 7, "maxLength": 64 },     "generated_at_utc": { "type": "string", "format": "date-time" },     "config_hash": { "type": "string", "minLength": 16, "maxLength": 128 },     "ephemeris": {       "type": "object",       "additionalProperties": false,       "required": ["provider", "swe_version", "fileset"],       "properties": {         "provider": { "type": "string", "enum": ["swisseph"] },         "swe_version": { "type": "string" },         "fileset": { "type": "string", "description": "e.g., 'DE431 subset 1900-2100'" }       }     }   } } `  
+# 3) Birth Record
+ 
+## 3.1 `aethos.birth_record.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.birth_record.v1.json",   "title": "Canonical Birth Record (v1)",   "type": "object",   "additionalProperties": false,   "required": [     "subject_id",     "birth_local_datetime",     "birth_timezone",     "birth_utc_datetime",     "julian_day",     "geo"   ],   "properties": {     "subject_id": { "type": "string", "format": "uuid" },     "birth_source": { "type": "string", "enum": ["certificate", "family_memory", "approx"] },     "time_accuracy_minutes": { "type": "integer", "minimum": 0, "maximum": 720 },      "birth_local_datetime": { "type": "string", "format": "date-time" },     "birth_timezone": { "type": "string", "minLength": 3, "description": "IANA tz, e.g. America/Los_Angeles" },     "birth_utc_datetime": { "type": "string", "format": "date-time" },      "julian_day": { "type": "number" },     "delta_t_seconds": { "type": "number" },      "geo": {       "type": "object",       "additionalProperties": false,       "required": ["lat", "lon"],       "properties": {         "lat": { "type": "number", "minimum": -90, "maximum": 90 },         "lon": { "type": "number", "minimum": -180, "maximum": 180 },         "place_label": { "type": "string" }       }     }   } } `  
+# 4) Calculation Config
+ 
+## 4.1 `aethos.calc_config.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.calc_config.v1.json",   "title": "Calculation Config (v1)",   "type": "object",   "additionalProperties": false,   "required": [     "zodiac_system",     "house_system",     "orb_policy",     "points_enabled"   ],   "properties": {     "zodiac_system": { "type": "string", "enum": ["tropical", "sidereal"] },     "ayanamsa": {       "type": "string",       "enum": ["lahiri", "raman", "fagan_bradley"],       "description": "Required when zodiac_system=sidereal"     },     "house_system": { "type": "string", "enum": ["whole_sign", "placidus", "koch", "regiomontanus"] },      "orb_policy": {       "type": "object",       "additionalProperties": false,       "required": ["name", "major_aspects"],       "properties": {         "name": { "type": "string" },         "major_aspects": {           "type": "object",           "additionalProperties": false,           "required": ["conjunction", "opposition", "trine", "square", "sextile"],           "properties": {             "conjunction": { "type": "number", "minimum": 0, "maximum": 15 },             "opposition": { "type": "number", "minimum": 0, "maximum": 15 },             "trine": { "type": "number", "minimum": 0, "maximum": 15 },             "square": { "type": "number", "minimum": 0, "maximum": 15 },             "sextile": { "type": "number", "minimum": 0, "maximum": 15 }           }         }       }     },      "points_enabled": {       "type": "object",       "additionalProperties": false,       "properties": {         "lunar_nodes": { "type": "boolean" },         "chiron": { "type": "boolean" },         "asteroids": { "type": "array", "items": { "type": "string" } }       }     },      "include_velocity": { "type": "boolean", "default": true }   },   "allOf": [     {       "if": { "properties": { "zodiac_system": { "const": "sidereal" } } },       "then": { "required": ["ayanamsa"] }     }   ] } `  
+# 5) Western Chart Primitives
+ 
+## 5.1 `aethos.western_chart.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.western_chart.v1.json",   "title": "Western Chart (v1)",   "type": "object",   "additionalProperties": false,   "required": ["zodiac", "house_system", "angles", "bodies", "houses"],   "properties": {     "zodiac": { "type": "string", "enum": ["tropical", "sidereal"] },     "ayanamsa": { "type": "string", "enum": ["lahiri", "raman", "fagan_bradley"] },     "house_system": { "type": "string", "enum": ["whole_sign", "placidus", "koch", "regiomontanus"] },      "angles": {       "type": "object",       "additionalProperties": false,       "required": ["asc_lon", "mc_lon"],       "properties": {         "asc_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },         "mc_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },         "desc_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },         "ic_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" }       }     },      "bodies": {       "type": "array",       "description": "Ordered list (stable ordering recommended).",       "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.planet_state.v1.json" }     },      "houses": {       "type": "array",       "minItems": 12,       "maxItems": 12,       "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.house_state.v1.json" }     }   } } ` 
+## 5.2 `aethos.angle_deg.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json",   "title": "Angle Degrees (0..360)",   "type": "number",   "minimum": 0,   "exclusiveMaximum": 360 } ` 
+## 5.3 `aethos.planet_state.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.planet_state.v1.json",   "title": "Planet / Body State (v1)",   "type": "object",   "additionalProperties": false,   "required": [     "body",     "lon",     "lat",     "distance_au",     "speed_lon",     "speed_lat",     "speed_dist",     "retrograde",     "sign",     "house"   ],   "properties": {     "body": {       "type": "string",       "enum": [         "Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn",         "Uranus","Neptune","Pluto",         "NorthNode","SouthNode","Chiron"       ]     },     "lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },     "lat": { "type": "number", "minimum": -90, "maximum": 90 },     "distance_au": { "type": "number", "minimum": 0 },      "speed_lon": { "type": "number", "description": "deg/day" },     "speed_lat": { "type": "number", "description": "deg/day" },     "speed_dist": { "type": "number", "description": "AU/day" },      "retrograde": { "type": "boolean" },      "sign": {       "type": "string",       "enum": [         "Aries","Taurus","Gemini","Cancer","Leo","Virgo",         "Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"       ]     },     "house": { "type": "integer", "minimum": 1, "maximum": 12 },      "meta": {       "type": "object",       "additionalProperties": true,       "description": "Future-proof extension point (e.g., magnitude, phase for Moon)."     }   } } ` 
+## 5.4 `aethos.house_state.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.house_state.v1.json",   "title": "House State (v1)",   "type": "object",   "additionalProperties": false,   "required": ["house", "sign", "start_lon", "end_lon"],   "properties": {     "house": { "type": "integer", "minimum": 1, "maximum": 12 },     "sign": {       "type": "string",       "enum": [         "Aries","Taurus","Gemini","Cancer","Leo","Virgo",         "Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"       ]     },     "start_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },     "end_lon": { "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json" },     "cusp_lon": {       "$ref": "https://aethos.app/schemas/canonical/aethos.angle_deg.v1.json",       "description": "Only meaningful for quadrant systems; for whole sign, equals start_lon."     }   } } `  
+# 6) Aspect Graph
+ 
+## 6.1 `aethos.aspect_edge.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.aspect_edge.v1.json",   "title": "Aspect Edge (v1)",   "type": "object",   "additionalProperties": false,   "required": [     "body_a",     "body_b",     "aspect",     "exact_angle",     "separation",     "orb",     "applying",     "strength"   ],   "properties": {     "body_a": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" },     "body_b": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" },      "aspect": {       "type": "string",       "enum": ["conjunction","opposition","trine","square","sextile","quincunx"]     },      "exact_angle": { "type": "number", "minimum": 0, "maximum": 180 },     "separation": { "type": "number", "minimum": 0, "maximum": 180 },     "orb": { "type": "number", "minimum": 0, "maximum": 30 },      "applying": { "type": "boolean" },      "strength": {       "type": "number",       "minimum": 0,       "maximum": 1,       "description": "Normalized strength score based on orb & optionally body weighting."     }   } } ` 
+## 6.2 `aethos.body_enum.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json",   "title": "Bodies Enum",   "type": "string",   "enum": [     "Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn",     "Uranus","Neptune","Pluto",     "NorthNode","SouthNode","Chiron"   ] } `  
+# 7) Derived Bundle (Hellenistic-friendly deterministic features)
+ 
+## 7.1 `aethos.derived_bundle.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.derived_bundle.v1.json",   "title": "Derived Deterministic Bundle (v1)",   "type": "object",   "additionalProperties": false,   "required": ["sect", "dignities", "angularity"],   "properties": {     "sect": { "type": "string", "enum": ["diurnal", "nocturnal"] },      "dignities": {       "type": "array",       "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.dignity_state.v1.json" }     },      "angularity": {       "type": "array",       "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.angularity_state.v1.json" }     },      "rulerships": {       "type": "array",       "description": "Optional v1 extension. House ruler chain / dispositors.",       "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.rulership_edge.v1.json" }     }   } } ` 
+## 7.2 `aethos.dignity_state.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.dignity_state.v1.json",   "title": "Dignity State (v1)",   "type": "object",   "additionalProperties": false,   "required": ["body", "sign", "status"],   "properties": {     "body": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" },     "sign": {       "type": "string",       "enum": [         "Aries","Taurus","Gemini","Cancer","Leo","Virgo",         "Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"       ]     },     "status": { "type": "string", "enum": ["domicile","exaltation","detriment","fall","peregrine"] }   } } ` 
+## 7.3 `aethos.angularity_state.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.angularity_state.v1.json",   "title": "Angularity State (v1)",   "type": "object",   "additionalProperties": false,   "required": ["body", "class"],   "properties": {     "body": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" },     "class": { "type": "string", "enum": ["angular","succedent","cadent"] }   } } ` 
+## 7.4 `aethos.rulership_edge.v1.json` (optional in v1 but defined now)
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.rulership_edge.v1.json",   "title": "Rulership / Dispositor Edge (v1)",   "type": "object",   "additionalProperties": false,   "required": ["from", "to", "reason"],   "properties": {     "from": { "type": "string", "description": "e.g., 'House7' or 'Venus'" },     "to": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" },     "reason": { "type": "string", "enum": ["sign_ruler","exaltation_ruler","triplicity_ruler","term_ruler","face_ruler"] }   } } `  
+# 8) Reliability Flags (uncertain time, etc.)
+ 
+## 8.1 `aethos.reliability.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/canonical/aethos.reliability.v1.json",   "title": "Reliability Flags (v1)",   "type": "object",   "additionalProperties": false,   "properties": {     "time_uncertainty_minutes": { "type": "integer", "minimum": 0, "maximum": 1440 },     "flags": {       "type": "array",       "items": {         "type": "string",         "enum": [           "HOUSES_UNRELIABLE",           "ANGLES_UNRELIABLE",           "MOON_SIGN_EDGE_CASE",           "ASPECTS_PARTIALLY_UNRELIABLE",           "EVENT_WINDOWS_UNRELIABLE"         ]       }     }   } } `  
+# 9) Timing Events (separate but critical canonical-adjacent)
+ 
+This is the deterministic “feed” that the Timing Intelligence Engine uses.
+ 
+## 9.1 `aethos.timing_event.v1.json`
+ `{   "$schema": "https://json-schema.org/draft/2020-12/schema",   "$id": "https://aethos.app/schemas/events/aethos.timing_event.v1.json",   "title": "Timing Event (v1)",   "type": "object",   "additionalProperties": false,   "required": [     "event_id",     "event_type",     "start_utc",     "peak_utc",     "end_utc",     "bodies",     "orb_used_deg",     "meta"   ],   "properties": {     "event_id": { "type": "string", "minLength": 10 },     "event_type": {       "type": "string",       "enum": [         "TRANSIT_EXACT_ASPECT",         "INGRESS",         "STATION",         "LUNATION",         "ECLIPSE_WINDOW"       ]     },     "start_utc": { "type": "string", "format": "date-time" },     "peak_utc": { "type": "string", "format": "date-time" },     "end_utc": { "type": "string", "format": "date-time" },      "bodies": {       "type": "array",       "minItems": 1,       "items": { "$ref": "https://aethos.app/schemas/canonical/aethos.body_enum.v1.json" }     },      "orb_used_deg": { "type": "number", "minimum": 0, "maximum": 15 },      "meta": {       "type": "object",       "additionalProperties": true,       "description": "e.g., natal_body, transit_body, aspect, ingress_sign, station_kind"     }   } } `  
+# 10) Golden Test Suite Plan (Regression Harness)
+ 
+This is how you stop Aethos from “quietly changing reality” in production.
+ 
+## 10.1 Test suite goals
+ 
+ 
+- Detect any change in: 
+ 
+  - planet longitudes (beyond tolerance)
+ 
+  - house assignments
+ 
+  - aspect detection
+ 
+  - retrograde flags
+ 
+  - derived sect/dignities
+ 
+  - event windows (peak times drift)
+ 
+
+ 
+ 
+
+ 
+## 10.2 Create **20 Golden Charts** (minimum)
+ 
+Split them deliberately:
+ 
+### A) “Standard” (8 charts)
+ 
+ 
+- spread across decades (1950s–2020s)
+ 
+- varied latitudes (equator, mid-latitude, high-latitude)
+ 
+- varied timezones and DST boundaries
+ 
+
+ 
+### B) “Edge cases” (12 charts)
+ 
+ 
+1. Birth near DST transition (spring forward)
+ 
+2. Birth near DST transition (fall back)
+ 
+3. High latitude: near Arctic Circle (houses tricky in quadrant systems)
+ 
+4. Moon at late degree (29°xx) sign boundary
+ 
+5. Mercury station day (speed near 0)
+ 
+6. Venus retrograde period
+ 
+7. Mars station day
+ 
+8. Leap day birth (Feb 29)
+ 
+9. Time unknown (null time; must produce reliability flags)
+ 
+10. Time approximate ±60 minutes (must produce reliability envelope)
+ 
+11. Birth at 00:00:00 boundary
+ 
+12. Birth at 23:59:59 boundary
+ 
+
+ 
+## 10.3 Assertions (what you compare)
+ 
+For each golden chart, store expected outputs:
+ 
+### Planet tolerances
+ 
+ 
+- longitude difference ≤ **0.0003°** (≈ 1 arcsecond) if using same ephemeris build
+ 
+- speed difference ≤ small epsilon
+ 
+
+ 
+### Derived features exact match
+ 
+ 
+- sign
+ 
+- house
+ 
+- retrograde boolean
+ 
+- sect
+ 
+- dignity status (given your dignity ruleset)
+ 
+
+ 
+### Aspect graph stable match
+ 
+ 
+- same set of aspect edges, same aspect types
+ 
+- orb difference within tolerance
+ 
+
+ 
+### Event windows stable match
+ 
+ 
+- peak time drift ≤ **5 minutes** for exact aspects/stations (tight)
+ 
+- start/end windows drift consistent with orb policy
+ 
+
+ 
+## 10.4 Snapshot testing format
+ 
+Store each golden output as:
+ 
+ 
+- canonical JSON
+ 
+- plus a reduced “summary digest”: 
+ 
+  - list of body longitudes rounded to 0.001°
+ 
+  - aspect list
+ 
+  - derived flags
+ 
+  - hash
+ 
+
+ 
+ 
+
+ 
+That makes diffs readable.
+ 
+## 10.5 CI behavior
+ 
+ 
+- On PR: run calculator against golden inputs
+ 
+- If drift occurs: 
+ 
+  - fail with a diff report
+ 
+  - require explicit “expected update” commit that bumps `calculator_version`
+ 
+
+ 
+ 
+
+ 
+This forces discipline.
+  
+# 11) One important correction (to avoid a trap)
+ 
+In the schemas above I used:
+ 
+ 
+- `format: date-time` for `birth_local_datetime`.
+ 
+
+ 
+Strictly, “local datetime” is *not* a real RFC3339 absolute moment unless it includes an offset. To keep it compliant, you have two strong options:
+ 
+**Option A (recommended):** store local time as *naive* strings:
+ 
+ 
+- `birth_local_date` (YYYY-MM-DD)
+ 
+- `birth_local_time` (HH:MM:SS)
+ 
+- `birth_timezone` (IANA) …and treat `birth_utc_datetime` as the canonical absolute.
+ 
+
+ 
+**Option B:** include local with offset:
+ 
+ 
+- `birth_local_datetime` like `"1991-11-06T17:43:00-05:00"` plus IANA.
+ 

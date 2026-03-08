@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "subject_id": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+  "birth": {
+    "birth_source": "certificate",
+    "time_accuracy_minutes": 0,
+    "birth_local_date": "1990-06-21",
+    "birth_local_time": "12:00:00",
+    "birth_timezone": "Atlantic/Reykjavik",
+    "geo": {
+      "lat": 64.1466,
+      "lon": -21.9426,
+      "place_label": "Reykjavik, Iceland"
+    }
+  },
+  "config": {
+    "zodiac_system": "tropical",
+    "house_system": "whole_sign",
+    "orb_policy": {
+      "name": "AethosMajor_8deg",
+      "major_aspects": {
+        "conjunction": 8,
+        "opposition": 8,
+        "trine": 8,
+        "square": 7,
+        "sextile": 6
+      }
+    },
+    "points_enabled": {
+      "lunar_nodes": true,
+      "chiron": true
+    }
+  },
+  "meta": {
+    "tag": "high_lat",
+    "notes": "High latitude 64°N — ascendant calc stress test."
+  }
+}

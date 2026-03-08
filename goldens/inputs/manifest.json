@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0.0",
+  "notes": "Golden input suite for Canonical Calculator regression testing.",
+  "count": 20,
+  "files": [
+    "chart_001_standard_sf.input.json",
+    "chart_002_standard_nyc.input.json",
+    "chart_003_standard_london.input.json",
+    "chart_004_standard_tokyo.input.json",
+    "chart_005_dst_us_spring_forward.input.json",
+    "chart_006_dst_us_fall_back.input.json",
+    "chart_007_dst_eu_spring_forward.input.json",
+    "chart_008_dst_eu_fall_back.input.json",
+    "chart_009_dst_au_sydney_spring_forward.input.json",
+    "chart_010_dst_au_sydney_fall_back.input.json",
+    "chart_011_leap_day.input.json",
+    "chart_012_midnight_start.input.json",
+    "chart_013_midnight_end.input.json",
+    "chart_014_high_lat_reykjavik.input.json",
+    "chart_015_high_lat_tromso.input.json",
+    "chart_016_equator_quito.input.json",
+    "chart_017_southern_hemisphere_cape_town.input.json",
+    "chart_018_india_kolkata.input.json",
+    "chart_019_pacific_apia.input.json",
+    "chart_020_time_unknown.input.json"
+  ]
+}
