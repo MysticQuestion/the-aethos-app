@@ -13,7 +13,9 @@
     "db:push": "drizzle-kit push",
     "start": "npx expo start",
     "lint": "npx expo lint",
-    "lint:fix": "npx expo lint --fix"
+    "lint:fix": "npx expo lint --fix",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "typecheck:intake": "tsc --noEmit --strict --skipLibCheck --target ES2022 --module commonjs --moduleResolution node lib/birth-intake.ts"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.0",

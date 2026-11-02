@@ -32,3 +32,7 @@ Use this repository only as prototype material for future mobile, backend, or ca
 ## Reconciliation rule
 
 Before reusing code from this repository, compare it against the canonical requirements in `MysticQuestion/aethos-v1-spec` and port only what supports the current Aethos V1 scope.
+
+## November 2026 mobile foundation
+
+The revised Aethos-first directive selects this repository for native assessment, not production deployment. See [the source audit and status report](docs/MOBILE_FOUNDATION_AUDIT.md). The new isolated intake boundary has tests (`npm test`) and a focused strict typecheck (`npm run typecheck:intake`); the existing provider and calculations remain unverified.
